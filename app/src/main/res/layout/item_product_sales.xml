@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="2dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="14dp"
+    android:paddingTop="2dp"
+    android:paddingEnd="14dp"
+    android:paddingStart="20dp">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="16"
+        android:maxLines="1"
+        android:textColor="@color/colorGray2"
+        android:textSize="12sp" />
+
+    <View
+        android:layout_width="1.5dp"
+        android:layout_height="12dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/colorGray2" />
+
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxEms="10"
+        android:maxLines="1"
+        android:textColor="@color/colorBlue"
+        android:textSize="12sp" />
+
+    <android.support.v4.widget.Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/iv_minus"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:padding="4dp"
+        android:src="@drawable/ic_minus_yellow"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tv_count"
+        android:layout_width="32dp"
+        android:gravity="center"
+        android:maxLength="3"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:text="0"
+        android:textColor="@color/colorGray1"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/iv_plus"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:padding="4dp"
+        android:src="@drawable/ic_plus_yellow"
+        tools:ignore="ContentDescription" />
+</LinearLayout>

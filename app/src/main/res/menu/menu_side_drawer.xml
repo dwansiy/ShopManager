@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_nav_category"
+            android:title="@string/menu_nav_category" />
+        <item
+            android:id="@+id/menu_nav_data"
+            android:title="@string/menu_nav_data" />
+        <item
+            android:id="@+id/menu_nav_premium"
+            android:title="@string/menu_nav_premium" />
+        <item
+            android:id="@+id/menu_nav_analysis"
+            android:title="@string/menu_nav_analysis" />
+    </group>
+
+    <item android:title="@string/menu_nav_information">
+        <menu>
+            <item
+                android:id="@+id/menu_nav_review"
+                android:title="@string/menu_nav_review" />
+            <item
+                android:id="@+id/menu_nav_report"
+                android:title="@string/menu_nav_report" />
+            <item
+                android:id="@+id/menu_nav_version"
+                android:title="@string/menu_nav_version" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_nav_etc">
+        <menu>
+            <item
+                android:id="@+id/menu_nav_term_service"
+                android:title="@string/menu_nav_term_service" />
+            <item
+                android:id="@+id/menu_nav_term_private"
+                android:title="@string/menu_nav_term_private" />
+            <item
+                android:id="@+id/menu_nav_open_source"
+                android:title="@string/menu_nav_open_source" />
+        </menu>
+    </item>
+
+</menu>

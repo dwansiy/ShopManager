@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorGray2"
+    android:orientation="vertical"
+    android:paddingTop="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_calendar_left"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="3dp"
+            app:srcCompat="@drawable/ic_left_white_vector"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/tv_calendar_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="17dp"
+            tools:ignore="SpUsage" />
+
+        <ImageView
+            android:id="@+id/iv_calendar_right"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="3dp"
+            app:srcCompat="@drawable/ic_right_white_vector"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_calendar_month_1"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="3"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_4"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="4"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_5"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="5"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_6"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="6"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_calendar_month_7"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="7"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_8"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="8"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_9"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="9"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_10"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="10"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_11"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="11"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_calendar_month_12"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_solid_circle_yellow"
+            android:gravity="center"
+            android:text="12"
+            android:textColor="@color/colorWhite"
+            android:textSize="16dp"
+            tools:ignore="HardcodedText,SpUsage" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">ShopManager</string>
+
+    <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ut gravida ipsum. Etiam ut diam mauris. Ut sit amet sodales turpis. Ut dictum imperdiet erat eget tincidunt. Fusce rhoncus mi dignissim, hendrerit ante et, mattis ipsum. Sed consequat posuere velit ac finibus. Donec sed aliquam dui. Quisque et ornare nunc, nec convallis est. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem eros, posuere interdum condimentum nec, auctor in neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus vitae tempor risus. Pellentesque sit amet metus maximus, accumsan velit et, tempor neque.</string>
+
+    <string name="navigation_drawer_open">열기</string>
+    <string name="navigation_drawer_close">닫기</string>
+
+    <string name="common_hash_shop">#샵</string>
+    <string name="common_manager">매니저</string>
+
+    <string name="common_loading">로딩중…</string>
+    <string name="common_search">검색</string>
+    <string name="common_name">이름</string>
+    <string name="common_phone">전화번호</string>
+    <string name="common_visit">방문</string>
+    <string name="common_recent_visit">최근 방문일</string>
+    <string name="common_total_price">구매금</string>
+    <string name="common_price">금액</string>
+    <string name="common_money">가격</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_edit">수정</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_register">등록</string>
+    <string name="common_memo">메모</string>
+    <string name="common_sort">정렬</string>
+    <string name="common_category">카테고리</string>
+    <string name="common_delete">삭제</string>
+
+    <string name="error_common">알수없는 에러가 발생했습니다.</string>
+
+    <string name="message_add_complete">추가되었습니다</string>
+
+    <string name="format_day_before">%d일 전</string>
+    <string name="format_count_text">%d / %d</string>
+    <string name="format_count_customer">고객 (%d명)</string>
+    <string name="format_price">%s원</string>
+    <string name="format_search_customer">검색 결과 (%d명)</string>
+    <string name="format_month">%d월</string>
+    <string name="format_year">%d년</string>
+
+    <string name="hint_search">이름,전화번호로 검색</string>
+
+    <string name="title_add_customer">연락처로 고객 추가</string>
+
+    <string name="menu_nav_category">카테고리 설정</string>
+    <string name="menu_nav_data">데이터 백업/복구</string>
+    <string name="menu_nav_premium">프리미엄 구매</string>
+    <string name="menu_nav_analysis">통계</string>
+    <string name="menu_nav_information">정보/문의</string>
+    <string name="menu_nav_review">평점과 리뷰쓰기</string>
+    <string name="menu_nav_report">버그 신고 및 제안</string>
+    <string name="menu_nav_version">버전 확인</string>
+    <string name="menu_nav_etc">기타</string>
+    <string name="menu_nav_term_service">서비스 이용약관</string>
+    <string name="menu_nav_term_private">개인정보 처리방침</string>
+    <string name="menu_nav_open_source">오픈소스 라이센스</string>
+
+    <string name="error_not_exist_name_phone">이름 혹은 전화번호를 입력해주세요</string>
+
+    <string name="title_add_category">카테고리 등록</string>
+    <string name="message_new_category">새로운 카테고리 등록</string>
+    <string name="message_need_category_name">카테고리명을 입력해주세요</string>
+    <string name="hint_new_category">새 카테고리</string>
+
+    <string name="action_add_product">상품 추가</string>
+    <string name="message_new_product">새로운 상품등록</string>
+    <string name="hint_new_product">새 상품</string>
+    <string name="message_error_no_input_price">금액을 입력해주세요</string>
+
+    <!-- 정렬 -->
+    <string name="sort_name">이름순 정렬</string>
+    <string name="sort_price">매출순 정렬</string>
+    <string name="sort_visit">방문 횟수순 정렬</string>
+    <string name="sort_create">등록일순 정렬</string>
+    <string name="sort_recent">최근 방문순 정렬</string>
+
+    <!-- 고객정보 화면 -->
+    <string name="title_customer_info">고객 정보</string>
+    <string name="format_name">이름 : </string>
+    <string name="format_phone">전화번호 : </string>
+    <string name="format_visit_count">방문 : </string>
+    <string name="format_total_price">누적 금액 : </string>
+    <string name="format_recent">최근 방문일 : </string>
+    <string name="format_memo">메모 : </string>
+    <string name="empty_customer">고객이 등록되지 않았습니다\n오른쪽 아래 버튼을 눌러 첫번째 고객을 등록해주세요!</string>
+
+    <!-- 매출 등록 화면 -->
+    <string name="title_sales">매출 등록</string>
+    <string name="message_total_price">판매 금액</string>
+    <string name="hint_enter_memo">메모를 입력해주세요</string>
+    <string name="empty_sales">+ 버튼을 눌러\n판매 내역을 등록해주세요!</string>
+    <string name="error_no_category">카테고리가 등록되지 않았습니다</string>
+
+    <!-- 카테고리 등록 화면 -->
+    <string name="empty_category">+ 버튼을 눌러\n카테고리 등록해주세요!</string>
+
+    <!-- 통계 화면 -->
+    <string name="chart_total_price">총 매출</string>
+    <string name="chart_won">원</string>
+    <string name="title_balance_history">정산내역</string>
+    <string name="format_count">(%d건)</string>
+    <string name="format_date">%d일(%s)</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorYellow"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_logo"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.xema.shopmanager.widget.FontTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="shop"
+            android:textColor="@color/colorGray1"
+            android:textSize="19dp"
+            app:font_name="daum_r.ttf"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <com.xema.shopmanager.widget.FontTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="manager"
+            android:textColor="@color/colorGray1"
+            android:textSize="19dp"
+            app:font_name="daum_sb.ttf"
+            tools:ignore="HardcodedText,SpUsage" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.xema.shopmanager.widget.FontTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/common_hash_shop"
+            android:textColor="@color/colorGray1"
+            android:textSize="19dp"
+            app:font_name="daum_r.ttf"
+            tools:ignore="HardcodedText,SpUsage" />
+
+        <com.xema.shopmanager.widget.FontTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/common_manager"
+            android:textColor="@color/colorGray1"
+            android:textSize="19dp"
+            app:font_name="daum_sb.ttf"
+            tools:ignore="HardcodedText,SpUsage" />
+    </LinearLayout>
+
+</LinearLayout>
