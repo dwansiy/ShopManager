@@ -14,8 +14,6 @@
         <item name="colorAccent">@color/colorGray1</item>
     </style>
 
-
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

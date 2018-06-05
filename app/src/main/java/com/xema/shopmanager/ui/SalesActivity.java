@@ -116,7 +116,6 @@ public class SalesActivity extends AppCompatActivity {
         }
     }
 
-
     private void initToolbar() {
         setSupportActionBar(tbMain);
         if (getSupportActionBar() != null)
@@ -176,7 +175,12 @@ public class SalesActivity extends AppCompatActivity {
 
         RealmList<ProductWrapper> list = new RealmList<>();
         for (CategoryWrapper categoryWrapper : mCategoryList) {
-            list.addAll(categoryWrapper.getProductWrappers());
+            RealmList<ProductWrapper> productWrappers = categoryWrapper.getProductWrappers();
+            if (productWrappers == null) return null;
+            for (ProductWrapper productWrapper : productWrappers) {
+                if (productWrapper.getCount() > 0)
+                    list.add(productWrapper);
+            }
         }
 
         return list;
@@ -199,8 +203,13 @@ public class SalesActivity extends AppCompatActivity {
 
     // TODO: 2018-02-25 리팩토링
     private void attemptRegister(View view) {
-        final Sales sales = new Sales();
         final RealmList<ProductWrapper> productWrapperList = getProductWrapperList();
+        if (productWrapperList == null || productWrapperList.size() == 0) {
+            Toast.makeText(this, getString(R.string.error_empty_product_wrapper), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final Sales sales = new Sales();
         final Date date = new Date(cvCalendar.getDate());
         final String memo = edtMemo.getText().toString();
 

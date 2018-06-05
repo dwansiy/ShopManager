@@ -1,6 +1,7 @@
 package com.xema.shopmanager.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +22,7 @@ import com.xema.shopmanager.adapter.SalesAdapter;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.model.Category;
 import com.xema.shopmanager.model.Person;
+import com.xema.shopmanager.model.Product;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.wrapper.ProductWrapper;
 import com.xema.shopmanager.utils.CommonUtil;
@@ -62,6 +64,8 @@ public class ProfileActivity extends AppCompatActivity {
     ImageView ivEdit;
     @BindView(R.id.ll_empty)
     LinearLayout llEmpty;
+    @BindView(R.id.fab_call)
+    FloatingActionButton fabCall;
 
     private String id;
     private Realm realm;
@@ -89,13 +93,15 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         initToolbar();
-        initListeners();
 
         person = query(id);
         if (person == null) {
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
+
+        initListeners();
         initAdapter();
 
         updateUI(person, mList);
@@ -120,6 +126,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> finish());
         ivEdit.setOnClickListener(this::attemptEdit);
         fabAdd.setOnClickListener(this::attemptAdd);
+        fabCall.setOnClickListener(this::attemptCall);
     }
 
     private void initAdapter() {
@@ -196,13 +203,26 @@ public class ProfileActivity extends AppCompatActivity {
         return results == null || results.size() == 0;
     }
 
-    private void attemptEdit(View v) {
-
+    private boolean shouldShowProductSnackBar() {
+        RealmResults<Product> results = realm.where(Product.class).findAll();
+        return results == null || results.size() == 0;
     }
+
+    private void attemptEdit(View v) {
+        Intent intent = new Intent(this, EditCustomerActivity.class);
+        intent.putExtra("personId", person.getId());
+        startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_CUSTOMER);
+    }
+
 
     private void attemptAdd(View v) {
         if (shouldShowCategorySnackBar()) {
             Snackbar.make(fabAdd, getString(R.string.error_no_category), Snackbar.LENGTH_LONG).setAction(getString(R.string.common_register), view -> {
+                Intent intent = new Intent(ProfileActivity.this, CategoryActivity.class);
+                startActivity(intent);
+            }).show();
+        } else if (shouldShowProductSnackBar()) {
+            Snackbar.make(fabAdd, getString(R.string.error_no_product), Snackbar.LENGTH_LONG).setAction(getString(R.string.common_register), view -> {
                 Intent intent = new Intent(ProfileActivity.this, CategoryActivity.class);
                 startActivity(intent);
             }).show();
@@ -213,9 +233,26 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void attemptCall(View view) {
+        String phone = person.getPhone();
+        if (TextUtils.isEmpty(phone)) {
+            Snackbar.make(view, getString(R.string.error_not_registered_phone), Snackbar.LENGTH_LONG).setAction(getString(R.string.common_register), v -> {
+                attemptEdit(view);
+            }).show();
+            return;
+        }
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+        startActivity(intent);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_CODE_ADD_SALES && resultCode == RESULT_OK) {
+            updateUI(person, mList);
+            needUpdate = true;
+        }
+        if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
+            person = query(id);
             updateUI(person, mList);
             needUpdate = true;
         }

@@ -17,19 +17,16 @@ import android.widget.Toast;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.model.Person;
 
-import java.util.Date;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
-import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-15.
  */
 
-public class AddActivity extends AppCompatActivity {
+public class AddCustomerActivity extends AppCompatActivity {
     @BindView(R.id.iv_back)
     ImageView ivBack;
     @BindView(R.id.iv_done)
@@ -51,7 +48,7 @@ public class AddActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_add_customer);
         realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
@@ -111,8 +108,8 @@ public class AddActivity extends AppCompatActivity {
         final String phone = edtPhone.getText().toString(); //하이픈 제거해야하나? 딱히 할필요는 없을듯...
         final String memo = edtMemo.getText().toString();
 
-        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(phone)) {
-            Snackbar.make(edtMemo, getString(R.string.error_not_exist_name_phone), Snackbar.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(name)) {
+            Snackbar.make(edtMemo, getString(R.string.error_not_exist_name), Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -122,20 +119,23 @@ public class AddActivity extends AppCompatActivity {
 
         final Person person = new Person();
         person.setName(name);
-        person.setPhone(phone);
-        person.setMemo(memo);
+
+        if (!TextUtils.isEmpty(phone))
+            person.setPhone(phone);
+        if (!TextUtils.isEmpty(memo))
+            person.setMemo(memo);
 
         transaction = realm.executeTransactionAsync(bgRealm -> {
             bgRealm.copyToRealm(person);
         }, () -> {
-            Toast.makeText(AddActivity.this, getString(R.string.message_add_complete), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddCustomerActivity.this, getString(R.string.message_add_complete), Toast.LENGTH_SHORT).show();
             view.setEnabled(true);
             // TODO: 2018-02-17 intent data 세팅
             setResult(RESULT_OK);
             finish();
         }, error -> {
             //error.printStackTrace();
-            Toast.makeText(AddActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddCustomerActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
             view.setEnabled(true);
         });
     }

@@ -38,7 +38,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="@string/title_add_customer"
+                    android:text="@string/title_edit_customer"
                     android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:text="@string/common_name"
+                android:text="@string/common_name_necessary"
                 android:textColor="@color/colorGray2"
                 android:textSize="13sp" />
 

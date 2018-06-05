@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ShopManager</string>
 
+    <string name="kakao_app_key">45ca9c88a1f6be5987da7e1f7c7f61bf</string>
+
     <string name="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ut gravida ipsum. Etiam ut diam mauris. Ut sit amet sodales turpis. Ut dictum imperdiet erat eget tincidunt. Fusce rhoncus mi dignissim, hendrerit ante et, mattis ipsum. Sed consequat posuere velit ac finibus. Donec sed aliquam dui. Quisque et ornare nunc, nec convallis est. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem eros, posuere interdum condimentum nec, auctor in neque. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus vitae tempor risus. Pellentesque sit amet metus maximus, accumsan velit et, tempor neque.</string>
 
     <string name="navigation_drawer_open">열기</string>
@@ -8,10 +10,12 @@
 
     <string name="common_hash_shop">#샵</string>
     <string name="common_manager">매니저</string>
+    <string name="common_shop_manager">#샵매니저</string>
 
     <string name="common_loading">로딩중…</string>
     <string name="common_search">검색</string>
     <string name="common_name">이름</string>
+    <string name="common_name_necessary">이름(필수)</string>
     <string name="common_phone">전화번호</string>
     <string name="common_visit">방문</string>
     <string name="common_recent_visit">최근 방문일</string>
@@ -30,6 +34,7 @@
     <string name="error_common">알수없는 에러가 발생했습니다.</string>
 
     <string name="message_add_complete">추가되었습니다</string>
+    <string name="message_edit_complete">수정되었습니다</string>
 
     <string name="format_day_before">%d일 전</string>
     <string name="format_count_text">%d / %d</string>
@@ -41,7 +46,8 @@
 
     <string name="hint_search">이름,전화번호로 검색</string>
 
-    <string name="title_add_customer">연락처로 고객 추가</string>
+    <string name="title_add_customer">고객 추가</string>
+    <string name="title_edit_customer">고객 정보 수정</string>
 
     <string name="menu_nav_category">카테고리 설정</string>
     <string name="menu_nav_data">데이터 백업/복구</string>
@@ -56,7 +62,7 @@
     <string name="menu_nav_term_private">개인정보 처리방침</string>
     <string name="menu_nav_open_source">오픈소스 라이센스</string>
 
-    <string name="error_not_exist_name_phone">이름 혹은 전화번호를 입력해주세요</string>
+    <string name="error_not_exist_name">이름을 입력해주세요</string>
 
     <string name="title_add_category">카테고리 등록</string>
     <string name="message_new_category">새로운 카테고리 등록</string>
@@ -84,6 +90,8 @@
     <string name="format_recent">최근 방문일 : </string>
     <string name="format_memo">메모 : </string>
     <string name="empty_customer">고객이 등록되지 않았습니다\n오른쪽 아래 버튼을 눌러 첫번째 고객을 등록해주세요!</string>
+    <string name="error_not_registered_phone">전화번호가 등록되지 않은 고객입니다.</string>
+    <string name="error_deleted_customer">삭제된 고객입니다.</string>
 
     <!-- 매출 등록 화면 -->
     <string name="title_sales">매출 등록</string>
@@ -91,6 +99,8 @@
     <string name="hint_enter_memo">메모를 입력해주세요</string>
     <string name="empty_sales">+ 버튼을 눌러\n판매 내역을 등록해주세요!</string>
     <string name="error_no_category">카테고리가 등록되지 않았습니다</string>
+    <string name="error_no_product">상품이 등록되지 않았습니다</string>
+    <string name="error_empty_product_wrapper">하나 이상의 상품을 선택해주세요</string>
 
     <!-- 카테고리 등록 화면 -->
     <string name="empty_category">+ 버튼을 눌러\n카테고리 등록해주세요!</string>
@@ -101,4 +111,21 @@
     <string name="title_balance_history">정산내역</string>
     <string name="format_count">(%d건)</string>
     <string name="format_date">%d일(%s)</string>
+
+    <!-- 카카오로 시작하기 화면 -->
+    <string name="message_hello">안녕하세요</string>
+    <string name="message_introduce_tail">입니다.</string>
+    <string name="action_sign_in_kakao">카카오 계정으로 로그인</string>
+
+    <!-- 가입 화면 -->
+    <string name="title_select_business_category">업종 선택</string>
+    <string name="common_business_category">업종</string>
+    <string name="business_category_beauty">뷰티</string>
+    <string name="business_category_business">영업</string>
+    <string name="business_category_lesson">레슨</string>
+    <string name="business_category_health">의료/건강</string>
+    <string name="business_category_education">교육</string>
+    <string name="business_category_etc">기타</string>
+    <string name="business_name">개인 / 사업자명</string>
+    <string name="message_error_not_select_business_type">업종을 선택해주세요</string>
 </resources>
