@@ -31,6 +31,9 @@
     <string name="common_category">카테고리</string>
     <string name="common_delete">삭제</string>
 
+    <string name="action_edit">수정하기</string>
+    <string name="action_delete">삭제하기</string>
+
     <string name="error_common">알수없는 에러가 발생했습니다.</string>
 
     <string name="message_add_complete">추가되었습니다</string>
@@ -45,6 +48,8 @@
     <string name="format_year">%d년</string>
 
     <string name="hint_search">이름,전화번호로 검색</string>
+
+    <string name="title_select_business_type">업종 선택</string>
 
     <string name="title_add_customer">고객 추가</string>
     <string name="title_edit_customer">고객 정보 수정</string>
@@ -92,6 +97,7 @@
     <string name="empty_customer">고객이 등록되지 않았습니다\n오른쪽 아래 버튼을 눌러 첫번째 고객을 등록해주세요!</string>
     <string name="error_not_registered_phone">전화번호가 등록되지 않은 고객입니다.</string>
     <string name="error_deleted_customer">삭제된 고객입니다.</string>
+    <string name="alert_delete_customer">정말 %s 고객님을 삭제하시겠습니까?\n\n고객 프로필 및 매출내역이 삭제되며\n삭제된 데이터는 복구할 수 없습니다.</string>
 
     <!-- 매출 등록 화면 -->
     <string name="title_sales">매출 등록</string>
@@ -104,6 +110,7 @@
 
     <!-- 카테고리 등록 화면 -->
     <string name="empty_category">+ 버튼을 눌러\n카테고리 등록해주세요!</string>
+    <string name="alert_delete_category">정말 %s 카테고리를 삭제하시겠습니까?\n\n삭제된 데이터는 복구할 수 없습니다.</string>
 
     <!-- 통계 화면 -->
     <string name="chart_total_price">총 매출</string>

@@ -6,15 +6,19 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/menu_nav_category"
+            android:icon="@drawable/ic_category_gray_vector"
             android:title="@string/menu_nav_category" />
         <item
             android:id="@+id/menu_nav_data"
+            android:icon="@drawable/ic_backup_gray_vector"
             android:title="@string/menu_nav_data" />
         <item
             android:id="@+id/menu_nav_premium"
+            android:icon="@drawable/ic_star_gray_vector"
             android:title="@string/menu_nav_premium" />
         <item
             android:id="@+id/menu_nav_analysis"
+            android:icon="@drawable/ic_chart_gray_vector"
             android:title="@string/menu_nav_analysis" />
     </group>
 

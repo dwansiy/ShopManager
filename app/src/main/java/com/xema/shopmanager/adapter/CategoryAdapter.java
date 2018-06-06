@@ -35,6 +35,26 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
 
     private Context mContext;
 
+    private OnProductLongClickListener onProductLongClickListener;
+
+    public interface OnProductLongClickListener {
+        void onProductLongClick(Product product);
+    }
+
+    public void setOnProductLongClickListener(OnProductLongClickListener onProductLongClickListener) {
+        this.onProductLongClickListener = onProductLongClickListener;
+    }
+
+    private OnCategoryLongClickListener onCategoryLongClickListener;
+
+    public interface OnCategoryLongClickListener {
+        void onCategoryLongClick(Category category);
+    }
+
+    public void setOnCategoryLongClickListener(OnCategoryLongClickListener onCategoryLongClickListener) {
+        this.onCategoryLongClickListener = onCategoryLongClickListener;
+    }
+
     private OnAddProductListener onAddProductListener;
 
     public interface OnAddProductListener {
@@ -54,25 +74,25 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
     @NonNull
     @Override
     public CategoryViewHolder onCreateParentViewHolder(@NonNull ViewGroup parentViewGroup, int viewType) {
-        View recipeView = mInflater.inflate(R.layout.item_category, parentViewGroup, false);
-        return new CategoryViewHolder(recipeView);
+        View categoryView = mInflater.inflate(R.layout.item_category, parentViewGroup, false);
+        return new CategoryViewHolder(categoryView);
     }
 
     @NonNull
     @Override
     public ProductViewHolder onCreateChildViewHolder(@NonNull ViewGroup childViewGroup, int viewType) {
-        View ingredientView = mInflater.inflate(R.layout.item_product, childViewGroup, false);
-        return new ProductViewHolder(ingredientView);
+        View productView = mInflater.inflate(R.layout.item_product, childViewGroup, false);
+        return new ProductViewHolder(productView);
     }
 
     @Override
     public void onBindParentViewHolder(@NonNull CategoryViewHolder categoryViewHolder, int parentPosition, @NonNull Category category) {
-        categoryViewHolder.bind(mContext, category, onAddProductListener);
+        categoryViewHolder.bind(mContext, category, onAddProductListener, onCategoryLongClickListener);
     }
 
     @Override
     public void onBindChildViewHolder(@NonNull ProductViewHolder productViewHolder, int parentPosition, int childPosition, @NonNull Product product) {
-        productViewHolder.bind(mContext, product);
+        productViewHolder.bind(mContext, product, onProductLongClickListener);
     }
 
     final static class CategoryViewHolder extends ParentViewHolder {
@@ -80,13 +100,15 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
         TextView tvName;
         @BindView(R.id.ll_add_product)
         LinearLayout llAddProduct;
+        @BindView(R.id.ll_background)
+        LinearLayout llBackground;
         @BindView(R.id.iv_fold)
         ImageView ivFold;
 
         CategoryViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(v -> {
+            llBackground.setOnClickListener(v -> {
                 if (isExpanded()) collapseView();
                 else expandView();
             });
@@ -115,10 +137,15 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
             return false;
         }
 
-        void bind(Context context, Category category, OnAddProductListener onAddProductListener) {
+        void bind(Context context, Category category, OnAddProductListener onAddProductListener, OnCategoryLongClickListener onDeleteCategoryListener) {
             tvName.setText(category.getName());
             llAddProduct.setOnClickListener(v -> {
                 if (onAddProductListener != null) onAddProductListener.onAddProduct(category);
+            });
+            llBackground.setOnLongClickListener(v -> {
+                if (onDeleteCategoryListener != null)
+                    onDeleteCategoryListener.onCategoryLongClick(category);
+                return false;
             });
         }
     }
@@ -128,15 +155,22 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
         TextView tvName;
         @BindView(R.id.tv_price)
         TextView tvPrice;
+        @BindView(R.id.ll_background)
+        LinearLayout llBackground;
 
         ProductViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Context context, Product product) {
+        void bind(Context context, Product product, OnProductLongClickListener onProductLongClickListener) {
             tvName.setText(product.getName());
             tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(product.getPrice())));
+            llBackground.setOnLongClickListener(v -> {
+                if (onProductLongClickListener != null)
+                    onProductLongClickListener.onProductLongClick(product);
+                return false;
+            });
         }
     }
 }

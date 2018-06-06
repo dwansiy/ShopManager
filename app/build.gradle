@@ -65,4 +65,7 @@ dependencies {
 
     //kakao login
     compile group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+
+    //circle imageview
+    implementation 'com.makeramen:roundedimageview:2.3.0'
 }

@@ -13,6 +13,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/riv_profile"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_profile_default"
+        app:riv_border_color="@color/colorGray2"
+        app:riv_border_width="1dp"
+        app:riv_corner_radius="200dp" />
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,18 +57,17 @@
         android:layout_marginTop="14dp"
         android:background="@color/colorWhite" />
 
-    <!-- todo 하드코딩 제거 -->
     <TextView
+        android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mason Park"
         android:textColor="@color/colorWhite"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 
     <TextView
+        android:id="@+id/tv_business_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="010-9609-1710"
         android:textColor="@color/colorWhite"
         android:textSize="12sp" />
 

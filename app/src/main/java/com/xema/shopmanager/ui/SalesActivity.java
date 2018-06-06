@@ -29,6 +29,8 @@ import com.xema.shopmanager.utils.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +40,7 @@ import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-24.
@@ -222,7 +225,11 @@ public class SalesActivity extends AppCompatActivity {
 
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(sales);
-        person.getSales().add(sales);
+        // TODO: 2018-06-06 리팩토링 - 생성할떄 정렬하는게 맞나?
+        Sales previous = person.getSales().where().lessThan("selectedAt", date).findFirst();
+        if (previous != null) person.getSales().add(person.getSales().indexOf(previous), sales);
+        else
+            person.getSales().add(sales);
         realm.commitTransaction();
 
         setResult(RESULT_OK);

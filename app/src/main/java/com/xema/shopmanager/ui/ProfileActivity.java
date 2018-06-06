@@ -27,6 +27,8 @@ import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.wrapper.ProductWrapper;
 import com.xema.shopmanager.utils.CommonUtil;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -34,6 +36,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-21.
@@ -264,6 +267,4 @@ public class ProfileActivity extends AppCompatActivity {
         if (needUpdate) setResult(RESULT_OK);
         super.finish();
     }
-
-
 }

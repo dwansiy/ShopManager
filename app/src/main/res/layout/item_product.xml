@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorWhite"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingBottom="6dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp">
+    android:background="@color/colorWhite">
 
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/ll_background"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="27dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginStart="27dp"
-        android:layout_weight="1"
-        android:maxLines="1"
-        android:textColor="@color/colorGray2"
-        android:textSize="13sp" />
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="6dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp">
 
-    <TextView
-        android:id="@+id/tv_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="26dp"
-        android:layout_marginRight="26dp"
-        android:maxLength="24"
-        android:maxLines="1"
-        android:textColor="#6674b7"
-        android:textSize="13sp" />
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="27dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="27dp"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textColor="@color/colorGray2"
+            android:textSize="13sp" />
 
-
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="26dp"
+            android:layout_marginRight="26dp"
+            android:maxLength="24"
+            android:maxLines="1"
+            android:textColor="#6674b7"
+            android:textSize="13sp" />
+    </LinearLayout>
+</FrameLayout>

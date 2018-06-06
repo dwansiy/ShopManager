@@ -20,11 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.adapter.PersonAdapter;
 import com.xema.shopmanager.common.Constants;
+import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.model.Person;
+import com.xema.shopmanager.model.Profile;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.wrapper.ProductWrapper;
 import com.xema.shopmanager.utils.CommonUtil;
@@ -105,6 +109,19 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         toggle.syncState();
 
         nvDrawer.setNavigationItemSelectedListener(this);
+
+        View headerView = nvDrawer.getHeaderView(0);
+        RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
+        TextView nameView = headerView.findViewById(R.id.tv_name);
+        TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
+
+        Profile profile = realm.where(Profile.class).findFirst();
+
+        if (profile == null) return;
+
+        GlideApp.with(this).load(profile.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
+        nameView.setText(profile.getName());
+        businessNameView.setText(profile.getBusinessName());
     }
 
     private void initListeners() {

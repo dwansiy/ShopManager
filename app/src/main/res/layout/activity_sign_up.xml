@@ -29,7 +29,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/title_add_customer"
+                    android:text="@string/title_select_business_type"
                     android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
 
