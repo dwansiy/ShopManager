@@ -27,9 +27,8 @@ public class DeleteEditBottomSheetDialog extends BottomSheetDialog {
     }
 
     public interface OnEditListener {
-        void onReport();
+        void onEdit();
     }
-
 
     public DeleteEditBottomSheetDialog(@NonNull Context context, int theme) {
         super(context, theme);
@@ -48,7 +47,7 @@ public class DeleteEditBottomSheetDialog extends BottomSheetDialog {
             if (onDeleteListener != null) onDeleteListener.onDelete();
         });
         llEdit.setOnClickListener(v -> {
-            if (onEditListener != null) onEditListener.onReport();
+            if (onEditListener != null) onEditListener.onEdit();
         });
     }
 

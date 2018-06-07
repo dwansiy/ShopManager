@@ -4,35 +4,7 @@
     <item
         android:icon="@drawable/ic_sort_white"
         android:title="@string/common_sort"
+        android:id="@+id/menu_sort"
         app:showAsAction="ifRoom">
-        <menu>
-            <group>
-                <item
-                    android:id="@+id/menu_sort_name"
-                    android:orderInCategory="100"
-                    android:title="@string/sort_name"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/menu_sort_price"
-                    android:orderInCategory="100"
-                    android:title="@string/sort_price"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/menu_sort_create"
-                    android:orderInCategory="100"
-                    android:title="@string/sort_create"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/menu_sort_recent"
-                    android:orderInCategory="100"
-                    android:title="@string/sort_recent"
-                    app:showAsAction="never" />
-                <item
-                    android:id="@+id/menu_sort_visit"
-                    android:orderInCategory="100"
-                    android:title="@string/sort_visit"
-                    app:showAsAction="never" />
-            </group>
-        </menu>
     </item>
 </menu>

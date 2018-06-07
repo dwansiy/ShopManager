@@ -8,4 +8,16 @@ public class Constants {
     public static final int REQUEST_CODE_ADD_CUSTOMER = 300;
     public static final int REQUEST_CODE_ADD_SALES = 301;
     public static final int REQUEST_CODE_EDIT_CUSTOMER = 300;
+
+    public enum Sort {
+        NAME, RECENT, PRICE, CREATE, VISIT;
+
+        public static Sort toSort(String string) {
+            try {
+                return valueOf(string);
+            } catch (Exception ex) {
+                return NAME;
+            }
+        }
+    }
 }

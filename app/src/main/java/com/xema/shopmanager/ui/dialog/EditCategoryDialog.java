@@ -29,9 +29,9 @@ public class EditCategoryDialog extends Dialog {
 
     private String name;
 
-    public EditCategoryDialog(@NonNull Context context, String originalName) {
+    public EditCategoryDialog(@NonNull Context context, String name) {
         super(context);
-        this.name = originalName;
+        this.name = name;
     }
 
     public interface OnRegisterListener {

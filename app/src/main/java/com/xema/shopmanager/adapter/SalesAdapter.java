@@ -2,6 +2,7 @@ package com.xema.shopmanager.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.model.Sales;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.ui.dialog.MemoDialog;
 import com.xema.shopmanager.utils.CommonUtil;
 
@@ -43,14 +44,15 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
         this.mDataList = mDataList;
     }
 
+    @NonNull
     @Override
-    public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sales, parent, false);
         return new ListItemViewHolder(view, viewType);
     }
 
     @Override
-    public void onBindViewHolder(ListItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
         final Sales sales = mDataList.get(position);
 
         holder.bind(sales, mContext);
@@ -89,25 +91,31 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
 
             final Date date = sales.getSelectedAt();
             tvDate.setText(CommonUtil.getModifiedDate(date));
+            ivMemo.setOnClickListener(v -> {
+                Dialog dialog = new MemoDialog(context, date, memo);
+                dialog.show();
+            });
 
-            RealmList<ProductWrapper> productWrappers = sales.getProductWrappers();
+            RealmList<Purchase> purchases = sales.getPurchases();
+            if (purchases.size() == 0) {
+                tvName.setText(context.getString(R.string.message_deleted_product));
+                tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(0)));
+                return;
+            }
+
             StringBuilder nameBuilder = new StringBuilder();
-            String delim = "";
+            String delimeter = "";
             long price = 0;
-            for (ProductWrapper productWrapper : productWrappers) {
-                if (productWrapper.getCount() > 0) {
-                    nameBuilder.append(delim).append(productWrapper.getProduct().getName());
-                    delim = ", ";
-                    price += productWrapper.getCount() * productWrapper.getProduct().getPrice();
+            for (Purchase purchase : purchases) {
+                if (purchase.getCount() > 0) {
+                    nameBuilder.append(delimeter).append(purchase.getProduct().getName());
+                    delimeter = ", ";
+                    price += purchase.getCount() * purchase.getProduct().getPrice();
                 }
             }
             tvName.setText(nameBuilder.toString());
             tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(price)));
 
-            ivMemo.setOnClickListener(v -> {
-                Dialog dialog = new MemoDialog(context, date, memo);
-                dialog.show();
-            });
         }
     }
 }

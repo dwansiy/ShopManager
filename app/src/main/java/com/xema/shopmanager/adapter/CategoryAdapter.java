@@ -38,7 +38,7 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
     private OnProductLongClickListener onProductLongClickListener;
 
     public interface OnProductLongClickListener {
-        void onProductLongClick(Product product);
+        void onProductLongClick(Product product, int parentPosition, int childPosition);
     }
 
     public void setOnProductLongClickListener(OnProductLongClickListener onProductLongClickListener) {
@@ -48,7 +48,7 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
     private OnCategoryLongClickListener onCategoryLongClickListener;
 
     public interface OnCategoryLongClickListener {
-        void onCategoryLongClick(Category category);
+        void onCategoryLongClick(Category category, int parentPosition);
     }
 
     public void setOnCategoryLongClickListener(OnCategoryLongClickListener onCategoryLongClickListener) {
@@ -87,12 +87,12 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
 
     @Override
     public void onBindParentViewHolder(@NonNull CategoryViewHolder categoryViewHolder, int parentPosition, @NonNull Category category) {
-        categoryViewHolder.bind(mContext, category, onAddProductListener, onCategoryLongClickListener);
+        categoryViewHolder.bind(mContext, category, onAddProductListener, onCategoryLongClickListener, parentPosition);
     }
 
     @Override
     public void onBindChildViewHolder(@NonNull ProductViewHolder productViewHolder, int parentPosition, int childPosition, @NonNull Product product) {
-        productViewHolder.bind(mContext, product, onProductLongClickListener);
+        productViewHolder.bind(mContext, product, onProductLongClickListener, parentPosition, childPosition);
     }
 
     final static class CategoryViewHolder extends ParentViewHolder {
@@ -137,14 +137,14 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
             return false;
         }
 
-        void bind(Context context, Category category, OnAddProductListener onAddProductListener, OnCategoryLongClickListener onDeleteCategoryListener) {
+        void bind(Context context, Category category, OnAddProductListener onAddProductListener, OnCategoryLongClickListener onDeleteCategoryListener, int parentPosition) {
             tvName.setText(category.getName());
             llAddProduct.setOnClickListener(v -> {
                 if (onAddProductListener != null) onAddProductListener.onAddProduct(category);
             });
             llBackground.setOnLongClickListener(v -> {
                 if (onDeleteCategoryListener != null)
-                    onDeleteCategoryListener.onCategoryLongClick(category);
+                    onDeleteCategoryListener.onCategoryLongClick(category, parentPosition);
                 return false;
             });
         }
@@ -163,12 +163,12 @@ public class CategoryAdapter extends ExpandableRecyclerAdapter<Category, Product
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Context context, Product product, OnProductLongClickListener onProductLongClickListener) {
+        void bind(Context context, Product product, OnProductLongClickListener onProductLongClickListener, int parentPosition, int childPosition) {
             tvName.setText(product.getName());
             tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(product.getPrice())));
             llBackground.setOnLongClickListener(v -> {
                 if (onProductLongClickListener != null)
-                    onProductLongClickListener.onProductLongClick(product);
+                    onProductLongClickListener.onProductLongClick(product, parentPosition, childPosition);
                 return false;
             });
         }

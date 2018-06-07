@@ -1,12 +1,12 @@
 package com.xema.shopmanager.model;
 
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
-
 import java.util.Date;
 import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -18,8 +18,11 @@ public class Sales extends RealmObject {
     private String id = UUID.randomUUID().toString();
     private Date createdAt = new Date();
     private Date selectedAt;
-    private RealmList<ProductWrapper> productWrappers = new RealmList<>();
+    private RealmList<Purchase> purchases;
     private String memo;
+
+    @LinkingObjects("sales")
+    private final RealmResults<Person> person = null;
 
     public String getMemo() {
         return memo;
@@ -53,11 +56,15 @@ public class Sales extends RealmObject {
         this.selectedAt = selectedAt;
     }
 
-    public RealmList<ProductWrapper> getProductWrappers() {
-        return productWrappers;
+    public RealmList<Purchase> getPurchases() {
+        return purchases;
     }
 
-    public void setProductWrappers(RealmList<ProductWrapper> productWrappers) {
-        this.productWrappers = productWrappers;
+    public void setPurchases(RealmList<Purchase> purchases) {
+        this.purchases = purchases;
+    }
+
+    public RealmResults<Person> getPerson() {
+        return person;
     }
 }

@@ -68,4 +68,7 @@ dependencies {
 
     //circle imageview
     implementation 'com.makeramen:roundedimageview:2.3.0'
+
+    //realm recycler adapter
+    implementation 'io.realm:android-adapters:2.1.1'
 }

@@ -24,11 +24,9 @@ import com.xema.shopmanager.model.Category;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Product;
 import com.xema.shopmanager.model.Sales;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.utils.CommonUtil;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -36,7 +34,6 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-21.
@@ -171,22 +168,13 @@ public class ProfileActivity extends AppCompatActivity {
 
             long total = 0;
             for (Sales item : sales) {
-                RealmList<ProductWrapper> productWrappers = item.getProductWrappers();
-                for (ProductWrapper wrapper : productWrappers) {
+                RealmList<Purchase> purchases = item.getPurchases();
+                for (Purchase wrapper : purchases) {
                     total += wrapper.getCount() * wrapper.getProduct().getPrice();
                 }
             }
             tvTotal.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(total)));
         }
-
-        //tvVisit.setText(String.valueOf(person.getVisit()));
-        //Date recentAt = person.getRecentAt();
-        //if (recentAt == null) {
-        //    tvRecent.setText("X");
-        //} else {
-        //    tvRecent.setText(CommonUtil.getModifiedDate(person.getRecentAt()));
-        //}
-        //tvTotal.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(person.getTotalPrice())));
 
         shouldShowEmptyView();
     }

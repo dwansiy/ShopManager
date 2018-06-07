@@ -17,7 +17,7 @@ import com.xema.shopmanager.R;
 import com.xema.shopmanager.model.Category;
 import com.xema.shopmanager.model.Product;
 import com.xema.shopmanager.model.wrapper.CategoryWrapper;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.utils.CommonUtil;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import butterknife.ButterKnife;
  * Created by xema0 on 2018-02-19.
  */
 
-public class SalesRegisterAdapter extends ExpandableRecyclerAdapter<CategoryWrapper, ProductWrapper, SalesRegisterAdapter.CategoryViewHolder, SalesRegisterAdapter.ProductViewHolder> {
+public class SalesRegisterAdapter extends ExpandableRecyclerAdapter<CategoryWrapper, Purchase, SalesRegisterAdapter.CategoryViewHolder, SalesRegisterAdapter.ProductViewHolder> {
     private static final String TAG = SalesRegisterAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
 
@@ -38,7 +38,7 @@ public class SalesRegisterAdapter extends ExpandableRecyclerAdapter<CategoryWrap
     private OnProductItemChangeListener onProductItemChangeListener;
 
     public interface OnProductItemChangeListener {
-        public void onProductItemChange(ProductWrapper productWrapper);
+        public void onProductItemChange(Purchase purchase);
     }
 
     public void setOnProductItemChangeListener(OnProductItemChangeListener onProductItemChangeListener) {
@@ -71,8 +71,8 @@ public class SalesRegisterAdapter extends ExpandableRecyclerAdapter<CategoryWrap
     }
 
     @Override
-    public void onBindChildViewHolder(@NonNull ProductViewHolder productViewHolder, int parentPosition, int childPosition, @NonNull ProductWrapper productWrapper) {
-        productViewHolder.bind(mContext, productWrapper, onProductItemChangeListener);
+    public void onBindChildViewHolder(@NonNull ProductViewHolder productViewHolder, int parentPosition, int childPosition, @NonNull Purchase purchase) {
+        productViewHolder.bind(mContext, purchase, onProductItemChangeListener);
     }
 
     final static class CategoryViewHolder extends ParentViewHolder {
@@ -136,31 +136,31 @@ public class SalesRegisterAdapter extends ExpandableRecyclerAdapter<CategoryWrap
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Context context, ProductWrapper productWrapper, OnProductItemChangeListener onProductItemChangeListener) {
-            Product product = productWrapper.getProduct();
+        void bind(Context context, Purchase purchase, OnProductItemChangeListener onProductItemChangeListener) {
+            Product product = purchase.getProduct();
 
             tvName.setText(product.getName());
             tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(product.getPrice())));
 
-            tvCount.setText(String.valueOf(productWrapper.getCount()));
+            tvCount.setText(String.valueOf(purchase.getCount()));
 
             ivMinus.setOnClickListener(v -> {
-                int count = productWrapper.getCount();
+                int count = purchase.getCount();
                 if (count <= 0) return;
                 count--;
-                productWrapper.setCount(count);
+                purchase.setCount(count);
                 if (onProductItemChangeListener != null)
-                    onProductItemChangeListener.onProductItemChange(productWrapper);
+                    onProductItemChangeListener.onProductItemChange(purchase);
                 tvCount.setText(String.valueOf(count));
             });
 
             ivPlus.setOnClickListener(v -> {
-                int count = productWrapper.getCount();
+                int count = purchase.getCount();
                 if (count > 1000) return;
                 count++;
-                productWrapper.setCount(count);
+                purchase.setCount(count);
                 if (onProductItemChangeListener != null)
-                    onProductItemChangeListener.onProductItemChange(productWrapper);
+                    onProductItemChangeListener.onProductItemChange(purchase);
                 tvCount.setText(String.valueOf(count));
             });
         }

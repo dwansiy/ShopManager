@@ -1,15 +1,15 @@
 package com.xema.shopmanager.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,7 +19,7 @@ import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Sales;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.ui.CustomerActivity;
 import com.xema.shopmanager.ui.ProfileActivity;
 import com.xema.shopmanager.utils.CommonUtil;
@@ -30,50 +30,96 @@ import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 /**
  * Created by diygame5 on 2017-09-18.
  * Project : Buyble
  */
 
-public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ListItemViewHolder> {
+public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapter.ListItemViewHolder> implements Filterable {
     private static final String TAG = PersonAdapter.class.getSimpleName();
 
     private Context mContext = null;
-    private Realm mRealm = null;
-    private List<Person> mDataList = null;
+    private RealmResults<Person> mDataList = null;
+    private Realm realm;
 
-    public PersonAdapter(Context context, Realm realm, List<Person> mDataList) {
-        super();
+    public PersonAdapter(Context context, RealmResults<Person> realmResults, boolean autoUpdate, Realm realm) {
+        super(realmResults, autoUpdate);
         this.mContext = context;
-        this.mRealm = realm;
+        this.mDataList = realmResults;
+        this.realm = realm;
+    }
+
+    public void setDataList(@NonNull RealmResults<Person> mDataList) {
         this.mDataList = mDataList;
     }
 
+    @NonNull
     @Override
-    public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_customer, parent, false);
         return new ListItemViewHolder(view, viewType);
     }
 
     @Override
-    public void onBindViewHolder(ListItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
         final Person person = mDataList.get(position);
 
         holder.bind(person, mContext);
     }
 
-    // TODO: 2018-02-15 에러없는지 체크
     @Override
     public long getItemId(int position) {
-        return mDataList != null ? (UUID.fromString(mDataList.get(position).getId()).getMostSignificantBits() & Long.MAX_VALUE) : position;
+        if (mDataList == null) return position;
+
+        Person person = mDataList.get(position);
+        if (person == null) return position;
+
+        return UUID.fromString(person.getId()).getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     @Override
     public int getItemCount() {
         return mDataList == null ? 0 : mDataList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new PersonFilter(this);
+    }
+
+    private void filterResults(String text) {
+        RealmQuery<Person> query = realm.where(Person.class);
+        if (!TextUtils.isEmpty(text)) {
+            query.contains("name", text, Case.INSENSITIVE).or().contains("phone", text);
+        }
+        mDataList = query.findAll();
+        updateData(mDataList);
+    }
+
+    private class PersonFilter extends Filter {
+        private final PersonAdapter adapter;
+
+        private PersonFilter(PersonAdapter adapter) {
+            super();
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return new FilterResults();
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.filterResults(constraint.toString());
+        }
     }
 
     final static class ListItemViewHolder extends RecyclerView.ViewHolder {
@@ -140,8 +186,8 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.ListItemVi
 
                 long total = 0;
                 for (Sales item : sales) {
-                    RealmList<ProductWrapper> productWrappers = item.getProductWrappers();
-                    for (ProductWrapper wrapper : productWrappers) {
+                    RealmList<Purchase> purchases = item.getPurchases();
+                    for (Purchase wrapper : purchases) {
                         total += wrapper.getCount() * wrapper.getProduct().getPrice();
                     }
                 }

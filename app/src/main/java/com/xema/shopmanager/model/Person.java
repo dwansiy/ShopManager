@@ -21,12 +21,9 @@ public class Person extends RealmObject {
     private String name;
     private String phone;
     private String memo;
-    //private int visit;//방문 횟수
     private Date createdAt = new Date();
-    //private Date recentAt;//최근방문일자
-    //private long totalPrice;//총 구매금
     private String profileImage;
-    private RealmList<Sales> sales = new RealmList<>();
+    private RealmList<Sales> sales;
 
     public String getId() {
         return id;

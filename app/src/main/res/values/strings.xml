@@ -107,10 +107,12 @@
     <string name="error_no_category">카테고리가 등록되지 않았습니다</string>
     <string name="error_no_product">상품이 등록되지 않았습니다</string>
     <string name="error_empty_product_wrapper">하나 이상의 상품을 선택해주세요</string>
+    <string name="message_deleted_product">삭제된 상품</string>
 
     <!-- 카테고리 등록 화면 -->
     <string name="empty_category">+ 버튼을 눌러\n카테고리 등록해주세요!</string>
     <string name="alert_delete_category">정말 %s 카테고리를 삭제하시겠습니까?\n\n삭제된 데이터는 복구할 수 없습니다.</string>
+    <string name="alert_delete_product">정말 %s 상품을 삭제하시겠습니까?\n\n연관된 매출 내역이 삭제되며\n삭제된 데이터는 복구할 수 없습니다.</string>
 
     <!-- 통계 화면 -->
     <string name="chart_total_price">총 매출</string>

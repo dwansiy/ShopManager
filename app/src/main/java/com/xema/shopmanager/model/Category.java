@@ -1,7 +1,6 @@
 package com.xema.shopmanager.model;
 
 import com.bignerdranch.expandablerecyclerview.model.Parent;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +17,7 @@ public class Category extends RealmObject implements Parent<Product> {
     @PrimaryKey
     private String id = UUID.randomUUID().toString();
     private String name;
-    private RealmList<Product> products = new RealmList<>();
+    private RealmList<Product> products;
 
     public String getId() {
         return id;
@@ -51,6 +50,6 @@ public class Category extends RealmObject implements Parent<Product> {
 
     @Override
     public boolean isInitiallyExpanded() {
-        return false;
+        return true;
     }
 }

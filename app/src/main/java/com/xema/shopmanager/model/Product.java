@@ -3,17 +3,22 @@ package com.xema.shopmanager.model;
 import java.util.UUID;
 
 import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by xema0 on 2018-02-19.
  */
 
-public class Product extends RealmObject{
+public class Product extends RealmObject {
     @PrimaryKey
     private String id = UUID.randomUUID().toString();
     private String name;
     private long price;
+
+    @LinkingObjects("products")
+    private final RealmResults<Category> category = null;
 
     public String getId() {
         return id;
@@ -37,5 +42,9 @@ public class Product extends RealmObject{
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    public RealmResults<Category> getCategory() {
+        return category;
     }
 }

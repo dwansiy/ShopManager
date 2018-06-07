@@ -20,7 +20,7 @@
         android:background="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="7dp">
 
         <TextView
             android:id="@+id/tv_name"

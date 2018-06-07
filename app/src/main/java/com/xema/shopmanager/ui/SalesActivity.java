@@ -2,7 +2,6 @@ package com.xema.shopmanager.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +23,11 @@ import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Product;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.wrapper.CategoryWrapper;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.utils.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +37,6 @@ import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-24.
@@ -155,13 +151,13 @@ public class SalesActivity extends AppCompatActivity {
             CategoryWrapper wrapper = new CategoryWrapper();
             wrapper.setCategory(category);
             RealmList<Product> products = category.getProducts();
-            RealmList<ProductWrapper> productWrappers = new RealmList<>();
+            RealmList<Purchase> purchases = new RealmList<>();
             for (Product product : products) {
-                ProductWrapper productWrapper = new ProductWrapper();
-                productWrapper.setProduct(product);
-                productWrappers.add(productWrapper);
+                Purchase purchase = new Purchase();
+                purchase.setProduct(product);
+                purchases.add(purchase);
             }
-            wrapper.setProductWrappers(productWrappers);
+            wrapper.setPurchases(purchases);
             mCategoryList.add(wrapper);
         }
         //mCategoryList.addAll(results);
@@ -173,16 +169,16 @@ public class SalesActivity extends AppCompatActivity {
         updateTotalPrice();
     }
 
-    private RealmList<ProductWrapper> getProductWrapperList() {
+    private RealmList<Purchase> getProductWrapperList() {
         if (mCategoryList == null) return null;
 
-        RealmList<ProductWrapper> list = new RealmList<>();
+        RealmList<Purchase> list = new RealmList<>();
         for (CategoryWrapper categoryWrapper : mCategoryList) {
-            RealmList<ProductWrapper> productWrappers = categoryWrapper.getProductWrappers();
-            if (productWrappers == null) return null;
-            for (ProductWrapper productWrapper : productWrappers) {
-                if (productWrapper.getCount() > 0)
-                    list.add(productWrapper);
+            RealmList<Purchase> purchases = categoryWrapper.getPurchases();
+            if (purchases == null) return null;
+            for (Purchase purchase : purchases) {
+                if (purchase.getCount() > 0)
+                    list.add(purchase);
             }
         }
 
@@ -193,21 +189,21 @@ public class SalesActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         long total = 0;
 
-        RealmList<ProductWrapper> list = getProductWrapperList();
+        RealmList<Purchase> list = getProductWrapperList();
         if (list == null) {
             tvTotalPrice.setText(getString(R.string.format_price, String.valueOf(0)));
             return;
         }
-        for (ProductWrapper productWrapper : list) {
-            total += productWrapper.getCount() * productWrapper.getProduct().getPrice();
+        for (Purchase purchase : list) {
+            total += purchase.getCount() * purchase.getProduct().getPrice();
         }
         tvTotalPrice.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(total)));
     }
 
     // TODO: 2018-02-25 리팩토링
     private void attemptRegister(View view) {
-        final RealmList<ProductWrapper> productWrapperList = getProductWrapperList();
-        if (productWrapperList == null || productWrapperList.size() == 0) {
+        final RealmList<Purchase> purchaseList = getProductWrapperList();
+        if (purchaseList == null || purchaseList.size() == 0) {
             Toast.makeText(this, getString(R.string.error_empty_product_wrapper), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -216,7 +212,7 @@ public class SalesActivity extends AppCompatActivity {
         final Date date = new Date(cvCalendar.getDate());
         final String memo = edtMemo.getText().toString();
 
-        sales.setProductWrappers(productWrapperList);
+        sales.setPurchases(purchaseList);
         sales.setSelectedAt(date);
         if (!TextUtils.isEmpty(memo)) sales.setMemo(memo);
 

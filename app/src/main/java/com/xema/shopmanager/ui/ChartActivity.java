@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,21 +16,17 @@ import com.xema.shopmanager.R;
 import com.xema.shopmanager.adapter.ChartAdapter;
 import com.xema.shopmanager.model.Chart;
 import com.xema.shopmanager.model.Sales;
-import com.xema.shopmanager.model.wrapper.ProductWrapper;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.widget.MonthCalendarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
 

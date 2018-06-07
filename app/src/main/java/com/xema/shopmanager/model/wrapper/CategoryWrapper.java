@@ -2,21 +2,19 @@ package com.xema.shopmanager.model.wrapper;
 
 import com.bignerdranch.expandablerecyclerview.model.Parent;
 import com.xema.shopmanager.model.Category;
+import com.xema.shopmanager.model.Purchase;
 
 import java.util.List;
-import java.util.UUID;
 
 import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by xema0 on 2018-02-24.
  */
 
-public class CategoryWrapper implements Parent<ProductWrapper> {
+public class CategoryWrapper implements Parent<Purchase> {
     private Category category;
-    private RealmList<ProductWrapper> productWrappers = new RealmList<>();
+    private RealmList<Purchase> purchases = new RealmList<>();
 
     public Category getCategory() {
         return category;
@@ -26,17 +24,17 @@ public class CategoryWrapper implements Parent<ProductWrapper> {
         this.category = category;
     }
 
-    public RealmList<ProductWrapper> getProductWrappers() {
-        return productWrappers;
+    public RealmList<Purchase> getPurchases() {
+        return purchases;
     }
 
-    public void setProductWrappers(RealmList<ProductWrapper> productWrappers) {
-        this.productWrappers = productWrappers;
+    public void setPurchases(RealmList<Purchase> purchases) {
+        this.purchases = purchases;
     }
 
     @Override
-    public List<ProductWrapper> getChildList() {
-        return productWrappers != null ? productWrappers : new RealmList<>();
+    public List<Purchase> getChildList() {
+        return purchases != null ? purchases : new RealmList<>();
     }
 
     @Override
