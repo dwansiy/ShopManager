@@ -4,4 +4,12 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_height">240dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+
+    <!-- quick panel -->
+    <dimen name="height_quick_panel_item">20dp</dimen>
+    <dimen name="textSize_quick_panel">10dp</dimen>
+    <dimen name="textSize_quick_panel_choose">15dp</dimen>
+    <dimen name="height_quicksidebartips">120dp</dimen>
+    <dimen name="textSize_quicksidebartips">46dp</dimen>
 </resources>

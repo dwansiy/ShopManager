@@ -1,7 +1,10 @@
 package com.xema.shopmanager.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -38,6 +41,9 @@ import com.xema.shopmanager.model.Profile;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.DelayTextWatcher;
+import com.xema.shopmanager.utils.InitialSoundUtil;
+import com.xema.shopmanager.widget.QuickPanelTipView;
+import com.xema.shopmanager.widget.QuickPanelView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,11 +70,18 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     DrawerLayout dlMain;
     @BindView(R.id.srl_main)
     SwipeRefreshLayout srlMain;
+    @BindView(R.id.qpv_main)
+    QuickPanelView qpvMain;
+    @BindView(R.id.qptv_main)
+    QuickPanelTipView qptvMain;
 
     private Realm realm;
 
     private List<Person> mList;
     private CustomerAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
+
+    private Vibrator mVibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +89,8 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         setContentView(R.layout.activity_customer);
         realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
+
+        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         initToolbar();
         initDrawer();
@@ -141,7 +156,61 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         srlMain.setOnRefreshListener(() -> {
             attemptSearch(edtSearch.getText().toString());
         });
+        qpvMain.setOnQuickSideBarTouchListener(mQuickPanelListener);
+        rvMain.addOnScrollListener(mQuickPanelVisibilityListener);
     }
+
+    private RecyclerView.OnScrollListener mQuickPanelVisibilityListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                qpvMain.setVisibility(View.VISIBLE);
+            } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                delayedHide();
+            }
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+    };
+
+    private Handler mHideHandler = new Handler();
+    private Runnable mHideRunnable = () -> qpvMain.setVisibility(View.GONE);
+
+    private void delayedHide() {
+        mHideHandler.removeCallbacks(mHideRunnable);
+        mHideHandler.postDelayed(mHideRunnable, 1800);
+    }
+
+    private QuickPanelView.OnQuickSideBarTouchListener mQuickPanelListener = new QuickPanelView.OnQuickSideBarTouchListener() {
+        @Override
+        public void onLetterChanged(String letter, int position, float y) {
+            qptvMain.setText(letter, position, y);
+            mVibrator.vibrate(20);
+            if (mList == null || mList.isEmpty()) return;
+
+            for (int i = 0; i < mList.size(); i++) {
+                Person person = mList.get(i);
+                String name = person.getName();
+                if (!TextUtils.isEmpty(name)) {
+                    if (InitialSoundUtil.matchString(name.substring(0, 1), letter)) {
+                        mLayoutManager.scrollToPositionWithOffset(i, 0);
+                        //rvMain.scrollToPosition(mList.indexOf(person));
+                        return;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onLetterTouching(boolean touching) {
+            if (!touching) {
+                delayedHide();
+                qptvMain.setVisibility(View.GONE);
+            } else {
+                mHideHandler.removeCallbacks(mHideRunnable);
+                qptvMain.setVisibility(View.VISIBLE);
+            }
+        }
+    };
 
     private void attemptSearch(String s) {
         if (TextUtils.isEmpty(s)) {
@@ -155,7 +224,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     }
 
     private void initAdapter() {
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         rvMain.setLayoutManager(mLayoutManager);
@@ -177,8 +246,30 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         if (mList != null)
             mList.clear();
         else mList = new ArrayList<>();
-        List<Person> filteredList = realm.copyFromRealm(realm.where(Person.class).contains("name", searchText).or().contains("phone", searchText).findAll());
-        mList.addAll(filteredList);
+        List<Person> filteredList = realm.copyFromRealm(realm.where(Person.class).findAll());
+        for (Person person : filteredList) {
+            String name = person.getName();
+            String phone = person.getPhone();
+            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone)) {
+                if (name.contains(searchText)) {
+                    mList.add(person);
+                } else if (InitialSoundUtil.matchString(name, searchText)) {
+                    mList.add(person);
+                } else if (phone.contains(searchText)) {
+                    mList.add(person);
+                }
+            } else if (!TextUtils.isEmpty(name)) {
+                if (name.contains(searchText)) {
+                    mList.add(person);
+                } else if (InitialSoundUtil.matchString(name, searchText)) {
+                    mList.add(person);
+                }
+            } else if (!TextUtils.isEmpty(phone)) {
+                if (phone.contains(searchText)) {
+                    mList.add(person);
+                }
+            }
+        }
     }
 
     private void updateUI() {

@@ -1,6 +1,5 @@
 package com.xema.shopmanager.utils;
 
-import android.support.annotation.WorkerThread;
 import android.text.Editable;
 import android.text.TextWatcher;
 
@@ -10,7 +9,7 @@ import java.util.TimerTask;
 //background 에서 실행되니 ui 업데이트할때 ui 스레드에서 접근할것
 public abstract class DelayTextWatcher implements TextWatcher {
     private Timer timer = new Timer();
-    private final long DELAY = 80; //0.08초
+    private final long DELAY = 50; //0.05초
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
