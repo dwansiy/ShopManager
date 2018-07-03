@@ -2,9 +2,11 @@ package com.xema.shopmanager.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.LongDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +15,20 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.model.Person;
-import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.Purchase;
+import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.ui.CustomerActivity;
 import com.xema.shopmanager.ui.ProfileActivity;
 import com.xema.shopmanager.utils.CommonUtil;
+import com.xema.shopmanager.utils.RealmUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,23 +47,18 @@ import io.realm.RealmResults;
  * Project : Buyble
  */
 
-@Deprecated
-public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapter.ListItemViewHolder> implements Filterable {
-    private static final String TAG = PersonAdapter.class.getSimpleName();
+public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListItemViewHolder> {
+    private static final String TAG = CustomerAdapter.class.getSimpleName();
 
     private Context mContext = null;
-    private RealmResults<Person> mDataList = null;
+    private List<Person> mDataList = null;
     private Realm realm;
 
-    public PersonAdapter(Context context, RealmResults<Person> realmResults, boolean autoUpdate, Realm realm) {
-        super(realmResults, autoUpdate);
+    public CustomerAdapter(Context context, List<Person> personList, Realm realm) {
+        super();
         this.mContext = context;
-        this.mDataList = realmResults;
+        this.mDataList = personList;
         this.realm = realm;
-    }
-
-    public void setDataList(@NonNull RealmResults<Person> mDataList) {
-        this.mDataList = mDataList;
     }
 
     @NonNull
@@ -67,6 +67,7 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_customer, parent, false);
         return new ListItemViewHolder(view, viewType);
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
@@ -90,38 +91,28 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
         return mDataList == null ? 0 : mDataList.size();
     }
 
-    @Override
-    public Filter getFilter() {
-        return new PersonFilter(this);
-    }
-
-    private void filterResults(String text) {
-        RealmQuery<Person> query = realm.where(Person.class);
-        if (!TextUtils.isEmpty(text)) {
-            query.contains("name", text, Case.INSENSITIVE).or().contains("phone", text);
-        }
-        mDataList = query.findAll();
-        updateData(mDataList);
-    }
-
-    private class PersonFilter extends Filter {
-        private final PersonAdapter adapter;
-
-        private PersonFilter(PersonAdapter adapter) {
-            super();
-            this.adapter = adapter;
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            return new FilterResults();
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            adapter.filterResults(constraint.toString());
-        }
-    }
+    //@Override
+    //public void filterObject(List<Person> filteredList, Person person, String searchText) {
+    //    String name = person.getName();
+    //    String phone = person.getPhone();
+    //    if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone)) {
+    //        if (name.contains(searchText) || phone.contains(searchText)) {
+    //            filteredList.add(person);
+    //            return;
+    //        }
+    //    }
+    //    if (!TextUtils.isEmpty(phone)) {
+    //        if (phone.contains(searchText)) {
+    //            filteredList.add(person);
+    //            return;
+    //        }
+    //    }
+    //    if (!TextUtils.isEmpty(name)) {
+    //        if (name.contains(searchText)) {
+    //            filteredList.add(person);
+    //        }
+    //    }
+    //}
 
     final static class ListItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ll_container)
@@ -157,8 +148,6 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
 
             String profileImage = person.getProfileImage();
             if (TextUtils.isEmpty(profileImage)) {
-                //깜빡임때문에 일단 아이콘으로 해결
-                //GlideApp.with(context).load(new ColorDrawable(Color.DKGRAY)).centerCrop().circleCrop().into(ivProfile);
                 GlideApp.with(context).load(R.drawable.ic_dark_gray).centerCrop().circleCrop().into(ivProfile);
                 tvProfile.setText(person.getName());
             } else {
@@ -167,22 +156,15 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
 
             tvName.setText(person.getName());
             tvPhone.setText(CommonUtil.toHypenFormat(person.getPhone()));
-            //tvVisit.setText(String.valueOf(person.getVisit()));
 
-            //Date recentAt = person.getRecentAt();
-            //if (recentAt == null) {
-            //    tvRecent.setText("X");
-            //} else {
-            //    tvRecent.setText(CommonUtil.getModifiedDate(person.getRecentAt()));
-            //}
             RealmList<Sales> sales = person.getSales();
             if (sales == null || sales.size() == 0) {
                 tvRecent.setText("X");
                 tvVisit.setText(String.valueOf(0));
                 tvTotal.setText(context.getString(R.string.format_price, String.valueOf(0)));
             } else {
-                Date recentAt = sales.maxDate("selectedAt");
-                tvRecent.setText(CommonUtil.getModifiedDate(recentAt));
+                Date recentAt = RealmUtils.getMaxSelectedDate(sales);
+                tvRecent.setText(recentAt != null ? CommonUtil.getModifiedDate(recentAt) : "X");
                 tvVisit.setText(String.valueOf(sales.size()));
 
                 long total = 0;
@@ -194,9 +176,6 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
                 }
                 tvTotal.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(total)));
             }
-
-
-            //tvTotal.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(person.getTotalPrice())));
         }
     }
 }

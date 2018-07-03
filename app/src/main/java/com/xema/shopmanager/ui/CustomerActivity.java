@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,29 +24,28 @@ import android.widget.TextView;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.xema.shopmanager.R;
-import com.xema.shopmanager.adapter.PersonAdapter;
+import com.xema.shopmanager.adapter.CustomerAdapter;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.comparator.PersonCreateComparator;
+import com.xema.shopmanager.comparator.PersonNameComparator;
+import com.xema.shopmanager.comparator.PersonPriceComparator;
+import com.xema.shopmanager.comparator.PersonRecentComparator;
+import com.xema.shopmanager.comparator.PersonVisitComparator;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Profile;
-import com.xema.shopmanager.model.Purchase;
-import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
+import com.xema.shopmanager.utils.DelayTextWatcher;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmResults;
-import io.realm.Sort;
 
 public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.tb_main)
@@ -63,13 +62,13 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     NavigationView nvDrawer;
     @BindView(R.id.dl_main)
     DrawerLayout dlMain;
+    @BindView(R.id.srl_main)
+    SwipeRefreshLayout srlMain;
 
     private Realm realm;
 
-    private RealmResults<Person> mList;
-    private PersonAdapter mAdapter;
-
-    private RealmChangeListener<RealmResults<Person>> mChangeListener = realmResults -> updateUI();
+    private List<Person> mList;
+    private CustomerAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +80,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         initToolbar();
         initDrawer();
         initListeners();
+        updateList();
         initAdapter();
 
         updateUI();
@@ -88,8 +88,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     protected void onStop() {
-        if (mList != null)
-            mList.removeAllChangeListeners();
         super.onStop();
     }
 
@@ -134,176 +132,105 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             Intent intent = new Intent(CustomerActivity.this, AddCustomerActivity.class);
             startActivityForResult(intent, Constants.REQUEST_CODE_ADD_CUSTOMER);
         });
-        edtSearch.addTextChangedListener(new TextWatcher() {
+        edtSearch.addTextChangedListener(new DelayTextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            public void delayedChanged(Editable editable) {
+                runOnUiThread(() -> attemptSearch(editable.toString()));
             }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                attemptSearch(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+        });
+        srlMain.setOnRefreshListener(() -> {
+            attemptSearch(edtSearch.getText().toString());
         });
     }
 
     private void attemptSearch(String s) {
         if (TextUtils.isEmpty(s)) {
-            queryCustomers();
+            updateList();
+            updateUI();
         } else {
-            queryCustomers(s);
+            updateFilteredList(s);
+            updateUI();
+            tbMain.setTitle(getString(R.string.format_search_customer, mList.size()));
         }
     }
 
     private void initAdapter() {
-        mList = realm.where(Person.class).findAll();
-
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         rvMain.setLayoutManager(mLayoutManager);
-        mAdapter = new PersonAdapter(this, mList, true, realm);
+        mAdapter = new CustomerAdapter(this, mList, realm);
         mAdapter.setHasStableIds(true);
         rvMain.setAdapter(mAdapter);
+    }
 
-        mList.addChangeListener(mChangeListener);
+    private void updateList() {
+        if (realm == null) return;
+        if (mList != null)
+            mList.clear();
+        else mList = new ArrayList<>();
+        mList.addAll(realm.copyFromRealm(realm.where(Person.class).findAll()));
+    }
+
+    private void updateFilteredList(String searchText) {
+        if (realm == null) return;
+        if (mList != null)
+            mList.clear();
+        else mList = new ArrayList<>();
+        List<Person> filteredList = realm.copyFromRealm(realm.where(Person.class).contains("name", searchText).or().contains("phone", searchText).findAll());
+        mList.addAll(filteredList);
     }
 
     private void updateUI() {
-        if (mList.size() == 0) {
+        if (mList == null || mList.isEmpty()) {
             rvMain.setVisibility(View.GONE);
             llEmpty.setVisibility(View.VISIBLE);
         } else {
+            sort(PreferenceHelper.loadSortMode(this));
             llEmpty.setVisibility(View.GONE);
             rvMain.setVisibility(View.VISIBLE);
         }
-
         tbMain.setTitle(getString(R.string.format_count_customer, mList.size()));
 
-        mAdapter.setDataList(mList);
-        mAdapter.updateData(mList);
+        mAdapter.notifyDataSetChanged();
+
+        if (srlMain.isRefreshing()) srlMain.setRefreshing(false);
     }
 
-    private void queryCustomers() {
-        mList = realm.where(Person.class).findAll();
-        updateUI();
-    }
+    //private void queryCustomers() {
+    //    mList = realm.where(Person.class).findAll();
+    //    updateUI();
+    //}
 
-    private void queryCustomers(String s) {
-        mList = realm.where(Person.class).contains("name", s).or().contains("phone", s).findAll();
-        updateUI();
-    }
+    //private void queryCustomers(String s) {
+    //    mList = realm.where(Person.class).contains("name", s).or().contains("phone", s).findAll();
+    //    updateUI();
+    //}
 
-    // TODO: 2018-06-08  소트
-    private void queryCustomers(Constants.Sort sort) {
+    //private List<Person> getFilteredList(String s){
+    //    return realm.copyFromRealm(realm.where(Person.class).contains("name", s).or().contains("phone", s).findAll(););
+    //}
+
+    private void sort(Constants.Sort sort) {
         if (mList == null || mList.size() == 0) return;
-
         switch (sort) {
             case NAME:
-                mList = mList.sort("name", Sort.ASCENDING);
-                updateUI();
-                //Collections.sort(mList, new NameComparator());
+                Collections.sort(mList, new PersonNameComparator());
+                break;
+            case PRICE:
+                Collections.sort(mList, new PersonPriceComparator());
+                break;
+            case VISIT:
+                Collections.sort(mList, new PersonVisitComparator());
+                break;
+            case CREATE:
+                Collections.sort(mList, new PersonCreateComparator());
                 break;
             case RECENT:
-                //List<Person> storesList = realm.copyFromRealm(mList);
-                //Collections.sort(storesList, new RecentComparator());
-                //mList = (RealmResults<Person>) storesList;
-                //updateUI();
-                break;
-            case PRICE: {
-                //List<Person> storesList = realm.copyFromRealm(mList);
-                //Collections.sort(storesList, new PriceComparator());
-                //mList = (RealmResults<Person>) storesList;
-                //updateUI();
-            }
-            break;
-            case VISIT: {
-                //List<Person> storesList = realm.copyFromRealm(mList);
-                //Collections.sort(storesList, new VisitComparator());
-                //mList = (RealmResults<Person>) storesList;
-                //updateUI();
-            }
-            break;
-            case CREATE:
-                mList = mList.sort("createdAt", Sort.ASCENDING);
-                updateUI();
-                //Collections.sort(mList, new CreateComparator());
+                Collections.sort(mList, new PersonRecentComparator());
                 break;
             default:
                 break;
-        }
-        mAdapter.notifyDataSetChanged();
-    }
-
-
-    private class NameComparator implements Comparator<Person> {
-        @Override
-        public int compare(Person o1, Person o2) {
-            return o1.getName().compareTo(o2.getName());
-        }
-    }
-
-    private class RecentComparator implements Comparator<Person> {
-        @Override
-        public int compare(Person o1, Person o2) {
-            Date date1 = o1.getSales().maxDate("selectedAt");
-            Date date2 = o2.getSales().maxDate("selectedAt");
-
-            return date2 == null ? (date1 == null ? 0 : Integer.MIN_VALUE) : (date1 == null ? Integer.MAX_VALUE : date2.compareTo(date1));
-        }
-    }
-
-    // TODO: 2018-02-26 리팩토링 시급
-    private class PriceComparator implements Comparator<Person> {
-        @Override
-        public int compare(Person o1, Person o2) {
-            long price1 = 0;
-            RealmList<Sales> sales1 = o1.getSales();
-            if (sales1 != null && sales1.size() != 0) {
-                for (Sales sales : sales1) {
-                    RealmList<Purchase> purchases = sales.getPurchases();
-                    if (purchases != null && purchases.size() != 0) {
-                        for (Purchase wrapper : purchases) {
-                            price1 += wrapper.getCount() * wrapper.getProduct().getPrice();
-                        }
-                    }
-                }
-            }
-
-            long price2 = 0;
-            RealmList<Sales> sales2 = o2.getSales();
-            if (sales2 != null && sales2.size() != 0) {
-                for (Sales sales : sales2) {
-                    RealmList<Purchase> purchases = sales.getPurchases();
-                    if (purchases != null && purchases.size() != 0) {
-                        for (Purchase wrapper : purchases) {
-                            price2 += wrapper.getCount() * wrapper.getProduct().getPrice();
-                        }
-                    }
-                }
-            }
-
-            return Long.compare(price2, price1);
-        }
-    }
-
-    private class VisitComparator implements Comparator<Person> {
-        @Override
-        public int compare(Person o1, Person o2) {
-            return Integer.compare(o2.getSales().size(), o1.getSales().size());
-        }
-    }
-
-    //내림차순(최근이 제일 위로로)
-    private class CreateComparator implements Comparator<Person> {
-        @Override
-        public int compare(Person o1, Person o2) {
-            return o2.getCreatedAt().compareTo(o1.getCreatedAt());
         }
     }
 
@@ -322,8 +249,12 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         if (requestCode == Constants.REQUEST_CODE_ADD_CUSTOMER && resultCode == RESULT_OK) {
             edtSearch.getText().clear();
             CommonUtil.hideKeyboard(this);
+            updateList();
             updateUI();
         } else if (requestCode == Constants.REQUEST_CODE_ADD_SALES && resultCode == RESULT_OK) {
+            edtSearch.getText().clear();
+            CommonUtil.hideKeyboard(this);
+            updateList();
             updateUI();
         }
     }
@@ -331,7 +262,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_sort, menu);
         return true;
     }
@@ -351,7 +281,10 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     private void attemptSort(Constants.Sort sort) {
         PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
-        queryCustomers(sort);
+        //updateList();
+        //updateUI();
+
+        attemptSearch(edtSearch.getText().toString());
     }
 
     @Override
