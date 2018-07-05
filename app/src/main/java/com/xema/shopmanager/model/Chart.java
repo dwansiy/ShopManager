@@ -13,7 +13,7 @@ import io.realm.RealmList;
 
 public class Chart implements Parent<Purchase> {
     private Date date;
-    private RealmList<Purchase> purchases;
+    private List<Purchase> purchases;
 
     public Date getDate() {
         return date;
@@ -23,11 +23,11 @@ public class Chart implements Parent<Purchase> {
         this.date = date;
     }
 
-    public RealmList<Purchase> getPurchases() {
+    public List<Purchase> getPurchases() {
         return purchases;
     }
 
-    public void setPurchases(RealmList<Purchase> purchases) {
+    public void setPurchases(List<Purchase> purchases) {
         this.purchases = purchases;
     }
 

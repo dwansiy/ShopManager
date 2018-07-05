@@ -2,21 +2,18 @@ package com.xema.shopmanager.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.LongDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
@@ -28,19 +25,14 @@ import com.xema.shopmanager.ui.ProfileActivity;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.RealmUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 
 /**
  * Created by diygame5 on 2017-09-18.
@@ -52,13 +44,30 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
 
     private Context mContext = null;
     private List<Person> mDataList = null;
-    private Realm realm;
 
-    public CustomerAdapter(Context context, List<Person> personList, Realm realm) {
+    public interface OnDeleteListener {
+        void onDelete(Person person, int position);
+    }
+
+    public interface OnEditListener {
+        void onEdit(Person person, int position);
+    }
+
+    private OnDeleteListener onDeleteListener;
+    private OnEditListener onEditListener;
+
+    public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
+        this.onDeleteListener = onDeleteListener;
+    }
+
+    public void setOnEditListener(OnEditListener onEditListener) {
+        this.onEditListener = onEditListener;
+    }
+
+    public CustomerAdapter(Context context, List<Person> personList) {
         super();
         this.mContext = context;
         this.mDataList = personList;
-        this.realm = realm;
     }
 
     @NonNull
@@ -73,7 +82,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
     public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
         final Person person = mDataList.get(position);
 
-        holder.bind(person, mContext);
+        holder.bind(mContext, person, position, onDeleteListener, onEditListener);
     }
 
     @Override
@@ -131,19 +140,36 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         TextView tvRecent;
         @BindView(R.id.tv_total)
         TextView tvTotal;
+        @BindView(R.id.btn_edit)
+        Button btnEdit;
+        @BindView(R.id.btn_delete)
+        Button btnDelete;
+        @BindView(R.id.sml_main)
+        SwipeMenuLayout smlMain;
 
         ListItemViewHolder(View itemView, int viewType) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        private void bind(Person person, Context context) {
+        private void bind(Context context, Person person, int position, OnDeleteListener onDeleteListener, OnEditListener onEditListener) {
             llContainer.setOnClickListener(v -> {
                 Intent intent = new Intent(context, ProfileActivity.class);
                 intent.putExtra("id", person.getId());
                 if (context instanceof CustomerActivity)
                     ((CustomerActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_ADD_SALES);
                 else context.startActivity(intent);
+            });
+
+            btnDelete.setOnClickListener(v -> {
+                if (onDeleteListener != null) onDeleteListener.onDelete(person, position);
+            });
+
+            btnEdit.setOnClickListener(v -> {
+                if (onEditListener != null) {
+                    smlMain.smoothClose();
+                    onEditListener.onEdit(person, position);
+                }
             });
 
             String profileImage = person.getProfileImage();

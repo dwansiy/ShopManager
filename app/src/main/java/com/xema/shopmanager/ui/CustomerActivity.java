@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.xema.shopmanager.R;
@@ -38,6 +39,8 @@ import com.xema.shopmanager.comparator.PersonRecentComparator;
 import com.xema.shopmanager.comparator.PersonVisitComparator;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Profile;
+import com.xema.shopmanager.model.Sales;
+import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.DelayTextWatcher;
@@ -52,7 +55,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
+import io.realm.RealmList;
 
+// TODO: 2018-07-03 quick panel 나타나는거 조정할수있게 옵션화면 만들기 -> 사용자 이름, 가게명 바꾸기나 등등도 가능하도록
 public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.tb_main)
     Toolbar tbMain;
@@ -83,6 +89,8 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     private Vibrator mVibrator;
 
+    private RealmAsyncTask transaction;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,15 +102,18 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
         initToolbar();
         initDrawer();
-        initListeners();
         updateList();
         initAdapter();
+        initListeners();
 
         updateUI();
     }
 
     @Override
     protected void onStop() {
+        if (transaction != null && !transaction.isCancelled()) {
+            transaction.cancel();
+        }
         super.onStop();
     }
 
@@ -115,6 +126,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             realm = null;
         }
     }
+
 
     private void initToolbar() {
         setSupportActionBar(tbMain);
@@ -158,6 +170,8 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         });
         qpvMain.setOnQuickSideBarTouchListener(mQuickPanelListener);
         rvMain.addOnScrollListener(mQuickPanelVisibilityListener);
+        mAdapter.setOnDeleteListener(this::showDeleteDialog);
+        mAdapter.setOnEditListener(this::attemptEdit);
     }
 
     private RecyclerView.OnScrollListener mQuickPanelVisibilityListener = new RecyclerView.OnScrollListener() {
@@ -184,7 +198,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         @Override
         public void onLetterChanged(String letter, int position, float y) {
             qptvMain.setText(letter, position, y);
-            mVibrator.vibrate(20);
+            mVibrator.vibrate(10);
             if (mList == null || mList.isEmpty()) return;
 
             for (int i = 0; i < mList.size(); i++) {
@@ -228,7 +242,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         rvMain.setLayoutManager(mLayoutManager);
-        mAdapter = new CustomerAdapter(this, mList, realm);
+        mAdapter = new CustomerAdapter(this, mList);
         mAdapter.setHasStableIds(true);
         rvMain.setAdapter(mAdapter);
     }
@@ -347,9 +361,14 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             CommonUtil.hideKeyboard(this);
             updateList();
             updateUI();
+        } else if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
+            attemptSearch(edtSearch.getText().toString());
+            //edtSearch.getText().clear();
+            //CommonUtil.hideKeyboard(this);
+            //updateList();
+            //updateUI();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -378,6 +397,40 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         attemptSearch(edtSearch.getText().toString());
     }
 
+    private void showDeleteDialog(Person person, int position) {
+        SimpleTextDialog dialog = new SimpleTextDialog(this, getString(R.string.alert_delete_customer, person.getName()));
+        dialog.setOnPositiveListener(this.getString(R.string.common_delete), () -> {
+            deletePerson(person, position);
+        });
+        dialog.show();
+    }
+
+    // TODO: 2018-07-03 RealmUtil 로 따로 빼기
+    private void deletePerson(Person person, int position) {
+        final String id = person.getId();
+
+        transaction = realm.executeTransactionAsync(realm -> {
+            Person deletePerson = realm.where(Person.class).equalTo("id", id).findFirst();
+            if (deletePerson == null) return;
+
+            RealmList<Sales> sales = deletePerson.getSales();
+            for (Sales sale : sales) {
+                sale.getPurchases().deleteAllFromRealm();
+            }
+            sales.deleteAllFromRealm();
+            deletePerson.deleteFromRealm();
+        }, () -> {
+            attemptSearch(edtSearch.getText().toString());
+            Toast.makeText(CustomerActivity.this, getString(R.string.message_delete_success), Toast.LENGTH_SHORT).show();
+        }, error -> Toast.makeText(CustomerActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show());
+    }
+
+    private void attemptEdit(Person person, int position) {
+        Intent intent = new Intent(this, EditCustomerActivity.class);
+        intent.putExtra("personId", person.getId());
+        startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_CUSTOMER);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -386,7 +439,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             Intent intent = new Intent(this, CategoryActivity.class);
             startActivity(intent);
         } else if (id == R.id.menu_nav_analysis) {
-            Intent intent = new Intent(this, ChartActivity.class);
+            Intent intent = new Intent(this, ChartListActivity.class);
             startActivity(intent);
         }
 

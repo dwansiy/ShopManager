@@ -77,14 +77,21 @@ public class ChartAdapter extends ExpandableRecyclerAdapter<Chart, Purchase, Cha
         }
 
         void bind(Context context, Chart chart) {
-            // TODO: 2018-03-11
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(chart.getDate());
 
             tvDate.setText(context.getString(R.string.format_date, calendar.get(Calendar.DAY_OF_MONTH), calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())));
-            tvCount.setText(context.getString(R.string.format_count, chart.getPurchases() == null ? 0 : chart.getPurchases().size()));
-
-            // TODO: 2018-03-11
+            List<Purchase> purchases = chart.getPurchases();
+            long price = 0;
+            if (purchases == null || purchases.isEmpty()) {
+                tvCount.setText(context.getString(R.string.format_count, 0));
+            } else {
+                tvCount.setText(context.getString(R.string.format_count, purchases.size()));
+                for (Purchase purchase : purchases) {
+                    price += purchase.getCount() * purchase.getProduct().getPrice();
+                }
+            }
+            tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(price)));
         }
     }
 

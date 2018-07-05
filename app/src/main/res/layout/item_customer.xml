@@ -1,164 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mcxtzhang.swipemenulib.SwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ll_container"
+    android:id="@+id/sml_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:paddingEnd="12dp"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingStart="12dp"
-    android:paddingTop="12dp">
-
-    <FrameLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp">
-
-        <ImageView
-            android:id="@+id/iv_profile"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/tv_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxLength="1"
-            android:textColor="@color/colorYellowDark"
-            android:textSize="18dp"
-            tools:ignore="SpUsage" />
-    </FrameLayout>
+    app:ios="false"
+    app:leftSwipe="false"
+    app:swipeEnable="true">
 
     <LinearLayout
+        android:id="@+id/ll_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingEnd="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingStart="12dp"
+        android:paddingTop="12dp">
 
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="1dp"
-            android:maxLines="1"
-            android:textColor="@color/colorGray0"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+        <FrameLayout
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/common_phone"
-                android:textColor="@color/colorGray2"
-                android:textSize="12sp" />
+            <ImageView
+                android:id="@+id/iv_profile"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/tv_phone"
+                android:id="@+id/tv_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_marginStart="6dp"
-                android:maxLines="1"
-                android:textColor="@color/colorGray1"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/common_visit"
-                android:textColor="@color/colorGray2"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tv_visit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_marginStart="6dp"
-                android:maxLines="1"
-                android:text="0"
+                android:layout_gravity="center"
+                android:maxLength="1"
                 android:textColor="@color/colorYellowDark"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
-                android:text="@string/common_recent_visit"
-                android:textColor="@color/colorGray2"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tv_recent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:layout_marginStart="6dp"
-                android:maxLines="1"
-                android:textColor="@color/colorGray1"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textSize="18dp"
+                tools:ignore="SpUsage" />
+        </FrameLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/common_total_price"
-                android:textColor="@color/colorGray2"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tv_total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_marginLeft="6dp"
-                android:layout_marginRight="6dp"
-                android:layout_marginStart="6dp"
+                android:layout_marginBottom="1dp"
                 android:maxLines="1"
-                android:text="@string/format_price"
-                android:textColor="@color/colorGray1"
-                android:textSize="12sp"
+                android:textColor="@color/colorGray0"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/common_phone"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:textColor="@color/colorGray1"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/common_visit"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_visit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:text="0"
+                    android:textColor="@color/colorYellowDark"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/common_recent_visit"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_recent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:textColor="@color/colorGray1"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/common_total_price"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_marginStart="6dp"
+                    android:maxLines="1"
+                    android:text="@string/format_price"
+                    android:textColor="@color/colorGray1"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="12dp"
+                android:background="@color/colorGray7" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_marginTop="12dp"
-            android:background="@color/colorGray7" />
     </LinearLayout>
-</LinearLayout>
+
+    <Button
+        android:id="@+id/btn_edit"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:background="#dca91e"
+        android:text="@string/common_edit"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:background="#ca0c0c"
+        android:text="@string/common_delete"
+        android:textColor="@android:color/white" />
+</com.mcxtzhang.swipemenulib.SwipeMenuLayout>

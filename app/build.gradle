@@ -74,4 +74,7 @@ dependencies {
 
     //swipe layout (for recyclerview items)
     implementation 'com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0'
+
+    //joda time
+    implementation 'joda-time:joda-time:2.10'
 }

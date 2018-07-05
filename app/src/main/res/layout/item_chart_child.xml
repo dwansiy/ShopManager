@@ -6,12 +6,12 @@
     android:background="@color/colorWhite"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingBottom="2dp"
+    android:paddingBottom="5dp"
     android:paddingEnd="14dp"
     android:paddingLeft="20dp"
     android:paddingRight="14dp"
     android:paddingStart="20dp"
-    android:paddingTop="2dp">
+    android:paddingTop="5dp">
 
     <TextView
         android:id="@+id/tv_name"
@@ -19,15 +19,15 @@
         android:layout_height="wrap_content"
         android:maxEms="16"
         android:maxLines="1"
-        android:textColor="@color/colorGray2"
+        android:textColor="@color/colorGray3"
         android:textSize="12sp" />
 
     <View
-        android:layout_width="1.5dp"
+        android:layout_width="1dp"
         android:layout_height="12dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@color/colorGray2" />
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/colorGray3" />
 
     <TextView
         android:id="@+id/tv_price"
@@ -52,7 +52,7 @@
         android:gravity="center"
         android:maxLength="3"
         android:text="0"
-        android:textColor="@color/colorGray1"
+        android:textColor="@color/colorGray2"
         android:textSize="14sp"
         tools:ignore="HardcodedText" />
 

@@ -21,4 +21,14 @@
     <color name="colorBlueGray">#809AAA</color>
 
     <color name="colorRed">#d90b0b</color>
+
+    <color name="colorChart1">#343cd4</color>
+    <color name="colorChart2">#771ca1</color>
+    <color name="colorChart3">#71b33b</color>
+    <color name="colorChart4">#dcb367</color>
+    <color name="colorChart5">#a11c6e</color>
+    <color name="colorChart6">#c7631f</color>
+    <color name="colorChart7">#26ccbb</color>
+    <color name="colorChart8">#d41844</color>
+    <color name="colorChart9">#d2cf18</color>
 </resources>

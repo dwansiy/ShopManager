@@ -67,4 +67,12 @@ public class Sales extends RealmObject {
     public RealmResults<Person> getPerson() {
         return person;
     }
+
+    public long getPrice() {
+        long price = 0;
+        for (Purchase purchase : getPurchases()) {
+            price += purchase.getCount() * purchase.getProduct().getPrice();
+        }
+        return price;
+    }
 }

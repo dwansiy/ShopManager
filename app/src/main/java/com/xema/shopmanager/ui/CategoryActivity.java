@@ -173,7 +173,7 @@ public class CategoryActivity extends AppCompatActivity {
             results.getProducts().add(product);
             //bgRealm.copyToRealmOrUpdate(results);
         }, error -> {
-            error.printStackTrace();
+            //error.printStackTrace();
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
         });
     }

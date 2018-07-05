@@ -78,6 +78,7 @@
     <string name="message_new_product">새로운 상품등록</string>
     <string name="hint_new_product">새 상품</string>
     <string name="message_error_no_input_price">금액을 입력해주세요</string>
+    <string name="message_delete_success">삭제되었습니다.</string>
 
     <!-- 정렬 -->
     <string name="sort_name">이름순 정렬</string>
@@ -120,6 +121,10 @@
     <string name="title_balance_history">정산내역</string>
     <string name="format_count">(%d건)</string>
     <string name="format_date">%d일(%s)</string>
+    <string name="empty_chart">등록된 매출 내역이 없습니다</string>
+    <string name="title_year_statistic">연간 매출 통계</string>
+    <string name="title_graph_month_sales_price">월별  매출</string>
+    <string name="title_graph_month_sales_count">월별  판매실적</string>
 
     <!-- 카카오로 시작하기 화면 -->
     <string name="message_hello">안녕하세요</string>
