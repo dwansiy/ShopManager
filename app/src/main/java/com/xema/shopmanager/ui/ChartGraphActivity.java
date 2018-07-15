@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
  * Created by xema0 on 2018-03-09.
  */
 
+// TODO: 2018-07-15 금액 합산 리사이클러뷰 헤더로 바꾸기 -> 포커스떄문에 금액 합산한게 안보임...
 public class ChartGraphActivity extends AppCompatActivity {
     @BindView(R.id.iv_back)
     ImageView ivBack;
@@ -37,7 +38,7 @@ public class ChartGraphActivity extends AppCompatActivity {
     @BindView(R.id.vp_main)
     NonSwipeableViewPager vpMain;
 
-    private static final int YEAR_START = 2012;
+    private static final int YEAR_START = 2015;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,8 +71,8 @@ public class ChartGraphActivity extends AppCompatActivity {
             years[i] = end - i;
         }
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), years);
         vpMain.setOffscreenPageLimit(1);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), years);
         vpMain.setAdapter(sectionsPagerAdapter);
         tabYear.setupWithViewPager(vpMain);
     }

@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmChangeListener;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 /**
@@ -103,6 +104,8 @@ public class CategoryActivity extends AppCompatActivity {
     private void initAdapter() {
         mCategoryList = realm.where(Category.class).findAll();
         mRealmChangeListener = o -> {
+            //customer activity 에서 수정사항 반영하도록. (카테고리나 상품이 생성,추가,삭제되었을때)
+            setResult(RESULT_OK);
             updateUI();
         };
         ((RealmResults<Category>) mCategoryList).addChangeListener(mRealmChangeListener);
@@ -205,8 +208,16 @@ public class CategoryActivity extends AppCompatActivity {
         realm.executeTransactionAsync(realm -> {
             Category deleteCategory = realm.where(Category.class).equalTo("id", id).findFirst();
             if (deleteCategory == null) return;
-            //하위 판매상품도 삭제하게 될경우 cascade delete 때문에 너무 복잡해짐, 기획적으로도 문제됨 (예전에 등록한 판매목록을 카테고리를 삭제한다고 삭제해도되나?)
-            //deleteCategory.getProducts().deleteAllFromRealm();
+
+            // TODO: 2018-07-15 sales 도 삭제해야하나? -> 일단은 purchase list 가 없을경우 삭제된 상품으로 표기함
+            //cascade delete 해야하나.....? 상품이랑 매출도 다 삭제될텐데... 일단 해놓고 기획봐서 수정
+            RealmList<Product> products = deleteCategory.getProducts();
+            for (Product product : products) {
+                realm.where(Purchase.class).equalTo("product.id", product.getId()).findAll().deleteAllFromRealm();
+            }
+            products.deleteAllFromRealm();
+
+            //cascade delete 안했을때는 이것만
             deleteCategory.deleteFromRealm();
         });
     }
@@ -257,6 +268,7 @@ public class CategoryActivity extends AppCompatActivity {
         final String id = product.getId();
 
         realm.executeTransactionAsync(realm -> {
+            // TODO: 2018-07-15 sales 도 삭제해야하나? -> 일단은 purchase list 가 없을경우 삭제된 상품으로 표기함
             //realm.where(Category.class).equalTo("products.id", id).findAll().deleteAllFromRealm();
             realm.where(Purchase.class).equalTo("product.id", id).findAll().deleteAllFromRealm();
             realm.where(Product.class).equalTo("id", id).findAll().deleteAllFromRealm();
@@ -265,12 +277,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void attemptEditProduct(Product product, int parentPosition, int childPosition) {
         EditProductDialog dialog = new EditProductDialog(this, product.getName(), product.getPrice());
-        dialog.setListener(new EditProductDialog.OnRegisterListener() {
-            @Override
-            public void onRegister(String name, long price) {
-                editProduct(product, name, price, parentPosition, childPosition);
-            }
-        });
+        dialog.setListener((name, price) -> editProduct(product, name, price, parentPosition, childPosition));
         dialog.show();
     }
 

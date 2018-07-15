@@ -21,11 +21,10 @@ import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.ui.CustomerActivity;
-import com.xema.shopmanager.ui.ProfileActivity;
+import com.xema.shopmanager.ui.CustomerDetailActivity;
 import com.xema.shopmanager.utils.CommonUtil;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -148,7 +147,7 @@ public class PersonAdapter extends RealmRecyclerViewAdapter<Person, PersonAdapte
 
         private void bind(Person person, Context context) {
             llContainer.setOnClickListener(v -> {
-                Intent intent = new Intent(context, ProfileActivity.class);
+                Intent intent = new Intent(context, CustomerDetailActivity.class);
                 intent.putExtra("id", person.getId());
                 if (context instanceof CustomerActivity)
                     ((CustomerActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_ADD_SALES);

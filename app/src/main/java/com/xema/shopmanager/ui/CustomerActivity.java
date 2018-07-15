@@ -198,7 +198,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         @Override
         public void onLetterChanged(String letter, int position, float y) {
             qptvMain.setText(letter, position, y);
-            mVibrator.vibrate(10);
+            mVibrator.vibrate(2);
             if (mList == null || mList.isEmpty()) return;
 
             for (int i = 0; i < mList.size(); i++) {
@@ -367,6 +367,11 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             //CommonUtil.hideKeyboard(this);
             //updateList();
             //updateUI();
+        } else if (requestCode == Constants.REQUEST_CODE_CATEGORY && resultCode == RESULT_OK) {
+            edtSearch.getText().clear();
+            CommonUtil.hideKeyboard(this);
+            updateList();
+            updateUI();
         }
     }
 
@@ -437,7 +442,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
         if (id == R.id.menu_nav_category) {
             Intent intent = new Intent(this, CategoryActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, Constants.REQUEST_CODE_CATEGORY);
         } else if (id == R.id.menu_nav_analysis) {
             Intent intent = new Intent(this, ChartListActivity.class);
             startActivity(intent);

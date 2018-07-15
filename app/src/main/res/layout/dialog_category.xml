@@ -44,6 +44,7 @@
             android:background="@null"
             android:gravity="center"
             android:imeOptions="actionDone"
+            android:selectAllOnFocus="true"
             android:inputType="text"
             android:maxLength="20"
             android:maxLines="1"

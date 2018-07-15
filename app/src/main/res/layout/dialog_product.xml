@@ -46,15 +46,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:selectAllOnFocus="true"
                 android:background="@null"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 android:inputType="text"
                 android:maxLength="20"
-                android:theme="@style/EditTextStyle"
                 android:maxLines="1"
                 android:padding="2dp"
                 android:text="@string/hint_new_product"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:theme="@style/EditTextStyle" />
 
             <View
                 android:layout_width="match_parent"
@@ -94,6 +95,7 @@
                 android:id="@+id/edt_product_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:selectAllOnFocus="true"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@null"
@@ -102,9 +104,9 @@
                 android:maxLength="13"
                 android:maxLines="1"
                 android:padding="2dp"
-                android:theme="@style/EditTextStyle"
                 android:text="0"
                 android:textSize="12sp"
+                android:theme="@style/EditTextStyle"
                 tools:ignore="HardcodedText" />
 
             <View

@@ -60,13 +60,13 @@
         android:id="@+id/nsv_main"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:descendantFocusability="blocksDescendants"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants"
             android:orientation="vertical">
 
             <CalendarView
@@ -77,9 +77,9 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_main"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -147,7 +147,6 @@
                     tools:ignore="ContentDescription" />
 
                 <EditText
-                    android:theme="@style/EditTextStyle"
                     android:id="@+id/edt_memo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -161,7 +160,8 @@
                     android:paddingBottom="3dp"
                     android:paddingTop="3dp"
                     android:textColor="@color/colorGray1"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:theme="@style/EditTextStyle" />
             </LinearLayout>
 
             <View

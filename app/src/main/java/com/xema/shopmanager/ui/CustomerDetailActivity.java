@@ -34,12 +34,13 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by xema0 on 2018-02-21.
  */
 
-public class ProfileActivity extends AppCompatActivity {
+public class CustomerDetailActivity extends AppCompatActivity {
     @BindView(R.id.iv_back)
     ImageView ivBack;
     @BindView(R.id.tb_main)
@@ -70,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String id;
     private Realm realm;
 
-    private RealmList<Sales> mList;
+    private RealmResults<Sales> mList;
     private SalesAdapter mAdapter;
 
     private Person person;
@@ -80,7 +81,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_customer_detail);
         realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
@@ -135,17 +136,19 @@ public class ProfileActivity extends AppCompatActivity {
 
         rvMain.setLayoutManager(mLayoutManager);
         //mList = new RealmList<>();
-        mList = person.getSales();
+        mList = person.getSales().sort("selectedAt", Sort.DESCENDING);
         mAdapter = new SalesAdapter(this, realm, mList);
         mAdapter.setHasStableIds(true);
         rvMain.setAdapter(mAdapter);
+
+        mAdapter.setOnDeleteListener(this::deleteSales);
     }
 
     private Person query(String id) {
         return realm.where(Person.class).equalTo("id", id).findFirst();
     }
 
-    private void updateUI(Person person, RealmList<Sales> sales) {
+    private void updateUI(Person person, RealmResults<Sales> sales) {
         mAdapter.notifyDataSetChanged();
 
         tvName.setText(person.getName());
@@ -209,17 +212,17 @@ public class ProfileActivity extends AppCompatActivity {
     private void attemptAdd(View v) {
         if (shouldShowCategorySnackBar()) {
             Snackbar.make(fabAdd, getString(R.string.error_no_category), Snackbar.LENGTH_LONG).setAction(getString(R.string.common_register), view -> {
-                Intent intent = new Intent(ProfileActivity.this, CategoryActivity.class);
+                Intent intent = new Intent(CustomerDetailActivity.this, CategoryActivity.class);
                 startActivity(intent);
             }).show();
         } else if (shouldShowProductSnackBar()) {
             Snackbar.make(fabAdd, getString(R.string.error_no_product), Snackbar.LENGTH_LONG).setAction(getString(R.string.common_register), view -> {
-                Intent intent = new Intent(ProfileActivity.this, CategoryActivity.class);
+                Intent intent = new Intent(CustomerDetailActivity.this, CategoryActivity.class);
                 startActivity(intent);
             }).show();
         } else {
-            Intent intent = new Intent(this, SalesActivity.class);
-            intent.putExtra("id", id);
+            Intent intent = new Intent(this, SalesRegisterActivity.class);
+            intent.putExtra("personId", id);
             startActivityForResult(intent, Constants.REQUEST_CODE_ADD_SALES);
         }
     }
@@ -236,14 +239,31 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void deleteSales(Sales sales, int position) {
+        final String id = sales.getId();
+
+        realm.executeTransactionAsync(realm -> {
+            Sales s = realm.where(Sales.class).equalTo("id", id).findFirst();
+            if (s == null) return;
+            s.getPurchases().deleteAllFromRealm();
+            s.deleteFromRealm();
+        }, () -> {
+            needUpdate = true;
+            Toast.makeText(CustomerDetailActivity.this, getString(R.string.message_delete_success), Toast.LENGTH_SHORT).show();
+            mAdapter.notifyDataSetChanged();
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_CODE_ADD_SALES && resultCode == RESULT_OK) {
             updateUI(person, mList);
             needUpdate = true;
-        }
-        if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
+        } else if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
             person = query(id);
+            updateUI(person, mList);
+            needUpdate = true;
+        } else if (requestCode == Constants.REQUEST_CODE_EDIT_SALES && resultCode == RESULT_OK) {
             updateUI(person, mList);
             needUpdate = true;
         }

@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,7 +20,7 @@ import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.ui.CustomerActivity;
-import com.xema.shopmanager.ui.ProfileActivity;
+import com.xema.shopmanager.ui.CustomerDetailActivity;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.RealmUtils;
 
@@ -31,7 +30,6 @@ import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmList;
 
 /**
@@ -100,32 +98,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         return mDataList == null ? 0 : mDataList.size();
     }
 
-    //@Override
-    //public void filterObject(List<Person> filteredList, Person person, String searchText) {
-    //    String name = person.getName();
-    //    String phone = person.getPhone();
-    //    if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone)) {
-    //        if (name.contains(searchText) || phone.contains(searchText)) {
-    //            filteredList.add(person);
-    //            return;
-    //        }
-    //    }
-    //    if (!TextUtils.isEmpty(phone)) {
-    //        if (phone.contains(searchText)) {
-    //            filteredList.add(person);
-    //            return;
-    //        }
-    //    }
-    //    if (!TextUtils.isEmpty(name)) {
-    //        if (name.contains(searchText)) {
-    //            filteredList.add(person);
-    //        }
-    //    }
-    //}
-
     final static class ListItemViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.ll_container)
-        LinearLayout llContainer;
         @BindView(R.id.iv_profile)
         ImageView ivProfile;
         @BindView(R.id.tv_profile)
@@ -140,10 +113,12 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         TextView tvRecent;
         @BindView(R.id.tv_total)
         TextView tvTotal;
-        @BindView(R.id.btn_edit)
-        Button btnEdit;
-        @BindView(R.id.btn_delete)
-        Button btnDelete;
+        @BindView(R.id.ll_container)
+        LinearLayout llContainer;
+        @BindView(R.id.iv_edit)
+        ImageView ivEdit;
+        @BindView(R.id.iv_delete)
+        ImageView ivDelete;
         @BindView(R.id.sml_main)
         SwipeMenuLayout smlMain;
 
@@ -154,18 +129,18 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
 
         private void bind(Context context, Person person, int position, OnDeleteListener onDeleteListener, OnEditListener onEditListener) {
             llContainer.setOnClickListener(v -> {
-                Intent intent = new Intent(context, ProfileActivity.class);
+                Intent intent = new Intent(context, CustomerDetailActivity.class);
                 intent.putExtra("id", person.getId());
                 if (context instanceof CustomerActivity)
                     ((CustomerActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_ADD_SALES);
                 else context.startActivity(intent);
             });
 
-            btnDelete.setOnClickListener(v -> {
+            ivDelete.setOnClickListener(v -> {
                 if (onDeleteListener != null) onDeleteListener.onDelete(person, position);
             });
 
-            btnEdit.setOnClickListener(v -> {
+            ivEdit.setOnClickListener(v -> {
                 if (onEditListener != null) {
                     smlMain.smoothClose();
                     onEditListener.onEdit(person, position);

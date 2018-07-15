@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.model.Person;
+import com.xema.shopmanager.utils.CommonUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,6 +69,7 @@ public class EditCustomerActivity extends AppCompatActivity {
                     return;
                 }
                 updateUI(person);
+                CommonUtil.focusLastCharacter(edtName);
             }
         }
     }
@@ -114,6 +117,28 @@ public class EditCustomerActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
             }
+        });
+        edtName.setOnEditorActionListener((v, actionId, event) -> {
+            switch (actionId) {
+                case EditorInfo.IME_ACTION_NEXT:
+                    edtPhone.requestFocus();
+                    CommonUtil.focusLastCharacter(edtPhone);
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        });
+        edtPhone.setOnEditorActionListener((v, actionId, event) -> {
+            switch (actionId) {
+                case EditorInfo.IME_ACTION_NEXT:
+                    edtMemo.requestFocus();
+                    CommonUtil.focusLastCharacter(edtMemo);
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         });
     }
 

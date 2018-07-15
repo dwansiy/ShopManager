@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -42,8 +43,8 @@ import io.realm.RealmResults;
  * Created by xema0 on 2018-02-24.
  */
 
-// TODO: 2018-02-25 전체 리팩토링
-public class SalesActivity extends AppCompatActivity {
+// TODO: 2018-07-15 전체적으로 리팩토링 -> 특히 수정부분! + 수정모드일떄 날짜 정렬하는게 힘듬
+public class SalesRegisterActivity extends AppCompatActivity {
     @BindView(R.id.iv_back)
     ImageView ivBack;
     @BindView(R.id.iv_done)
@@ -67,14 +68,19 @@ public class SalesActivity extends AppCompatActivity {
     private Realm realm;
     private RealmAsyncTask transaction;
 
-    private Sales mData;
-
     private String personId;
+    private String salesId;
+
+    private enum Mode {
+        REGISTER, EDIT
+    }
+
+    private Mode mode = Mode.REGISTER;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sales);
+        setContentView(R.layout.activity_sales_register);
         realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
@@ -84,16 +90,24 @@ public class SalesActivity extends AppCompatActivity {
             return;
         }
 
-        personId = getIntent().getStringExtra("id");
+        personId = intent.getStringExtra("personId");
+        salesId = intent.getStringExtra("salesId");
+        if (TextUtils.isEmpty(salesId)) {
+            mode = Mode.REGISTER;
+        } else {
+            mode = Mode.EDIT;
+        }
 
         initToolbar();
         initListeners();
         initAdapter();
-
         queryCategory();
-
-        // TODO: 2018-02-25 수정일경우는 쿼리해서 대입
-        //initSalesData();
+        if (mode == Mode.EDIT) {
+            mappingSalesData();
+        }
+        mAdapter.notifyParentDataSetChanged(true);
+        mAdapter.expandAllParents();
+        updateTotalPrice();
 
         nsvMain.scrollBy(0, 0);
     }
@@ -123,7 +137,13 @@ public class SalesActivity extends AppCompatActivity {
 
     private void initListeners() {
         ivBack.setOnClickListener(v -> finish());
-        ivDone.setOnClickListener(this::attemptRegister);
+        ivDone.setOnClickListener(v -> {
+            if (mode == Mode.REGISTER) {
+                attemptRegister(v);
+            } else if (mode == Mode.EDIT) {
+                attemptEdit(v);
+            }
+        });
         cvCalendar.setMaxDate(System.currentTimeMillis());
         cvCalendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             Calendar c = Calendar.getInstance();
@@ -140,6 +160,8 @@ public class SalesActivity extends AppCompatActivity {
         rvMain.setHasFixedSize(false);
 
         rvMain.setNestedScrollingEnabled(false);
+
+        mAdapter.setOnProductItemChangeListener(productWrapper -> updateTotalPrice());
     }
 
     private void queryCategory() {
@@ -160,16 +182,37 @@ public class SalesActivity extends AppCompatActivity {
             wrapper.setPurchases(purchases);
             mCategoryList.add(wrapper);
         }
-        //mCategoryList.addAll(results);
-        mAdapter.notifyParentDataSetChanged(true);
-
-        mAdapter.expandAllParents();
-
-        mAdapter.setOnProductItemChangeListener(productWrapper -> updateTotalPrice());
-        updateTotalPrice();
     }
 
-    private RealmList<Purchase> getProductWrapperList() {
+    // TODO: 2018-07-15 리팩토링 시급
+    private void mappingSalesData() {
+        Sales sales = realm.where(Sales.class).equalTo("id", salesId).findFirst();
+        if (sales == null) {
+            Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        Date date = sales.getSelectedAt();
+        if (date != null) {
+            cvCalendar.setDate(date.getTime());
+        }
+        edtMemo.setText(sales.getMemo());
+        CommonUtil.focusLastCharacter(edtMemo);
+
+        List<Purchase> purchaseList = realm.copyFromRealm(sales.getPurchases());
+        for (CategoryWrapper categoryWrapper : mCategoryList) {
+            RealmList<Purchase> purchases = categoryWrapper.getPurchases();
+            for (Purchase purchase : purchases) {
+                for (Purchase mappingPurchase : purchaseList) {
+                    if (purchase.getProduct().getId().equals(mappingPurchase.getProduct().getId())) {
+                        purchases.set(purchases.indexOf(purchase), mappingPurchase);
+                    }
+                }
+            }
+        }
+    }
+
+    private RealmList<Purchase> getPurchaseList() {
         if (mCategoryList == null) return null;
 
         RealmList<Purchase> list = new RealmList<>();
@@ -189,7 +232,7 @@ public class SalesActivity extends AppCompatActivity {
     private void updateTotalPrice() {
         long total = 0;
 
-        RealmList<Purchase> list = getProductWrapperList();
+        RealmList<Purchase> list = getPurchaseList();
         if (list == null) {
             tvTotalPrice.setText(getString(R.string.format_price, String.valueOf(0)));
             return;
@@ -202,7 +245,7 @@ public class SalesActivity extends AppCompatActivity {
 
     // TODO: 2018-02-25 리팩토링
     private void attemptRegister(View view) {
-        final RealmList<Purchase> purchaseList = getProductWrapperList();
+        final RealmList<Purchase> purchaseList = getPurchaseList();
         if (purchaseList == null || purchaseList.size() == 0) {
             Toast.makeText(this, getString(R.string.error_empty_product_wrapper), Toast.LENGTH_SHORT).show();
             return;
@@ -220,12 +263,40 @@ public class SalesActivity extends AppCompatActivity {
         if (person == null) return;
 
         realm.beginTransaction();
-        realm.copyToRealmOrUpdate(sales);
+        //realm.copyToRealmOrUpdate(sales);
         // TODO: 2018-06-06 리팩토링 - 생성할떄 정렬하는게 맞나?
-        Sales previous = person.getSales().where().lessThan("selectedAt", date).findFirst();
-        if (previous != null) person.getSales().add(person.getSales().indexOf(previous), sales);
-        else
-            person.getSales().add(sales);
+        //Sales previous = person.getSales().where().lessThan("selectedAt", date).findFirst();
+        //if (previous != null) person.getSales().add(person.getSales().indexOf(previous), sales);
+        //else
+        person.getSales().add(sales);
+        realm.commitTransaction();
+
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    // TODO: 2018-07-15 리팩토링 -> purchaseList가 비관리 객체기때문에 sales를 복사해서 사용하고있음
+    private void attemptEdit(View view) {
+        final RealmList<Purchase> purchaseList = getPurchaseList();
+        if (purchaseList == null || purchaseList.size() == 0) {
+            Toast.makeText(this, getString(R.string.error_empty_product_wrapper), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Sales managedSales = realm.where(Sales.class).equalTo("id", salesId).findFirst();
+        if (managedSales == null) return;
+        Sales sales = realm.copyFromRealm(managedSales);
+        final Date date = new Date(cvCalendar.getDate());
+        final String memo = edtMemo.getText().toString();
+        sales.setSelectedAt(date);
+        if (!TextUtils.isEmpty(memo)) sales.setMemo(memo);
+        sales.setPurchases(purchaseList);
+
+        Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
+        if (person == null) return;
+
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(sales);
         realm.commitTransaction();
 
         setResult(RESULT_OK);

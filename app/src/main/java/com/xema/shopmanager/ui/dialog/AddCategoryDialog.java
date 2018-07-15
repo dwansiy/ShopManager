@@ -5,10 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.xema.shopmanager.R;
+import com.xema.shopmanager.utils.CommonUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +46,7 @@ public class AddCategoryDialog extends Dialog {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 바 삭제
 
-        setContentView(R.layout.dialog_add_category);
+        setContentView(R.layout.dialog_category);
         ButterKnife.bind(this);
 
         tvCancel.setOnClickListener(v -> dismiss());
@@ -52,5 +54,19 @@ public class AddCategoryDialog extends Dialog {
             if (listener != null) listener.onRegister(edtCategory.getText().toString());
             dismiss();
         });
+
+        edtCategory.setOnEditorActionListener((v, actionId, event) -> {
+            switch (actionId) {
+                case EditorInfo.IME_ACTION_DONE:
+                    if (listener != null) listener.onRegister(edtCategory.getText().toString());
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        });
+
+        edtCategory.requestFocus();
+        CommonUtil.showKeyBoard(getContext(), edtCategory);
     }
 }

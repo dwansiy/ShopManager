@@ -147,7 +147,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/colorWhite"
                 android:gravity="top"
-                android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 android:lines="4"
                 android:maxLength="50"

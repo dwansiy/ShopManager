@@ -16,6 +16,7 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +45,11 @@ public class CommonUtil {
 
     public static String getModifiedDate(Date modified) {
         return getModifiedDate(Locale.getDefault(), modified);
+    }
+
+    public static void focusLastCharacter(EditText editText) {
+        int pos = editText.getText().length();
+        editText.setSelection(pos);
     }
 
     private static String getModifiedDate(Locale locale, Date modified) {
@@ -130,6 +136,15 @@ public class CommonUtil {
         }
         if (imm != null)
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static void showKeyBoard(Context context, EditText editText) {
+        editText.postDelayed(() -> {
+            InputMethodManager keyboard = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (keyboard != null) {
+                keyboard.showSoftInput(editText, 0);
+            }
+        }, 50);
     }
 
     public static String getKeyHash(final Context context) {

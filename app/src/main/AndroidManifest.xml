@@ -32,11 +32,11 @@
         <activity android:name=".ui.AddCustomerActivity" />
         <activity android:name=".ui.EditCustomerActivity" />
         <activity android:name=".ui.CategoryActivity" />
-        <activity android:name=".ui.ProfileActivity" />
+        <activity android:name=".ui.CustomerDetailActivity" />
         <activity android:name=".ui.ChartListActivity" />
         <activity android:name=".ui.ChartGraphActivity" />
         <activity
-            android:name=".ui.SalesActivity"
+            android:name=".ui.SalesRegisterActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
 

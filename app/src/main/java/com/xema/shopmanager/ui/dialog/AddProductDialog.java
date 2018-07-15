@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xema.shopmanager.R;
+import com.xema.shopmanager.utils.CommonUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,23 +52,39 @@ public class AddProductDialog extends Dialog {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE); //타이틀 바 삭제
 
-        setContentView(R.layout.dialog_add_product);
+        setContentView(R.layout.dialog_product);
         ButterKnife.bind(this);
 
-        tvCancel.setOnClickListener(v -> dismiss());
-        tvRegister.setOnClickListener(v -> {
-            if (listener != null) {
-                String name = edtProductName.getText().toString();
-                String price = edtProductPrice.getText().toString();
-                if (!TextUtils.isEmpty(price) && TextUtils.isDigitsOnly(price)) {
-                    listener.onRegister(name, Long.parseLong(price));
-                    dismiss();
-                } else {
-                    Toast.makeText(mContext, mContext.getString(R.string.message_error_no_input_price), Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                dismiss();
+        edtProductPrice.setOnEditorActionListener((v, actionId, event) -> {
+            switch (actionId) {
+                case EditorInfo.IME_ACTION_DONE:
+                    attemptRegister();
+                    break;
+                default:
+                    return false;
             }
+            return true;
         });
+
+        tvCancel.setOnClickListener(v -> dismiss());
+        tvRegister.setOnClickListener(v -> attemptRegister());
+
+        edtProductName.requestFocus();
+        CommonUtil.showKeyBoard(getContext(), edtProductName);
+    }
+
+    private void attemptRegister() {
+        if (listener != null) {
+            String name = edtProductName.getText().toString();
+            String price = edtProductPrice.getText().toString();
+            if (!TextUtils.isEmpty(price) && TextUtils.isDigitsOnly(price)) {
+                listener.onRegister(name, Long.parseLong(price));
+                dismiss();
+            } else {
+                Toast.makeText(mContext, mContext.getString(R.string.message_error_no_input_price), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            dismiss();
+        }
     }
 }

@@ -8,6 +8,8 @@ public class Constants {
     public static final int REQUEST_CODE_ADD_CUSTOMER = 300;
     public static final int REQUEST_CODE_EDIT_CUSTOMER = 301;
     public static final int REQUEST_CODE_ADD_SALES = 310;
+    public static final int REQUEST_CODE_EDIT_SALES = 311;
+    public static final int REQUEST_CODE_CATEGORY = 320;
 
     public enum Sort {
         NAME, RECENT, PRICE, CREATE, VISIT;

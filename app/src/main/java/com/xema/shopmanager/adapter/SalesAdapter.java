@@ -1,19 +1,26 @@
 package com.xema.shopmanager.adapter;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.xema.shopmanager.R;
+import com.xema.shopmanager.common.Constants;
+import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.Purchase;
+import com.xema.shopmanager.ui.SalesRegisterActivity;
 import com.xema.shopmanager.ui.dialog.MemoDialog;
 import com.xema.shopmanager.utils.CommonUtil;
 
@@ -44,6 +51,16 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
         this.mDataList = mDataList;
     }
 
+    public interface OnDeleteListener {
+        void onDelete(Sales sales, int position);
+    }
+
+    private OnDeleteListener onDeleteListener;
+
+    public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
+        this.onDeleteListener = onDeleteListener;
+    }
+
     @NonNull
     @Override
     public ListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,7 +72,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
     public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
         final Sales sales = mDataList.get(position);
 
-        holder.bind(sales, mContext);
+        holder.bind(mContext, sales, position, onDeleteListener);
     }
 
     @Override
@@ -83,7 +100,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
             ButterKnife.bind(this, itemView);
         }
 
-        private void bind(Sales sales, Context context) {
+        private void bind(Context context, Sales sales, int position, OnDeleteListener onDeleteListener) {
             final String memo = sales.getMemo();
             if (TextUtils.isEmpty(memo)) ivMemo.setVisibility(View.GONE);
             else ivMemo.setVisibility(View.VISIBLE);
@@ -116,6 +133,33 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.ListItemView
             tvName.setText(nameBuilder.toString());
             tvPrice.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(price)));
 
+            Person person = sales.getPerson().first();
+            if (person == null) return;
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, SalesRegisterActivity.class);
+                intent.putExtra("personId", person.getId());
+                intent.putExtra("salesId", sales.getId());
+                ((Activity) context).startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_SALES);
+            });
+            itemView.setOnLongClickListener(v -> {
+                PopupMenu p = new PopupMenu(context, v);
+                if (!(context instanceof Activity)) return false;
+                ((Activity) context).getMenuInflater().inflate(R.menu.menu_edit_delete, p.getMenu());
+                p.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.menu_edit) {
+                        Intent intent = new Intent(context, SalesRegisterActivity.class);
+                        intent.putExtra("personId", person.getId());
+                        intent.putExtra("salesId", sales.getId());
+                        ((Activity) context).startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_SALES);
+                    } else if (item.getItemId() == R.id.menu_delete) {
+                        if (onDeleteListener != null)
+                            onDeleteListener.onDelete(sales, position);
+                    }
+                    return false;
+                });
+                p.show();
+                return false;
+            });
         }
     }
 }

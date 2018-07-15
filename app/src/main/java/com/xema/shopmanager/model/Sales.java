@@ -75,4 +75,12 @@ public class Sales extends RealmObject {
         }
         return price;
     }
+
+    public long getTotalPurchaseCount() {
+        long totalCount = 0;
+        for (Purchase purchase : getPurchases()) {
+            totalCount += purchase.getCount();
+        }
+        return totalCount;
+    }
 }
