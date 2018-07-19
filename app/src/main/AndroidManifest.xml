@@ -39,7 +39,6 @@
             android:name=".ui.SalesRegisterActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
-
         <!-- kakao -->
         <meta-data
             android:name="com.kakao.sdk.AppKey"
@@ -54,6 +53,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- Fabric -->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="6c4759f2f6ca052d8d8c84ff6a8efadcb1caf536" />
     </application>
 
 </manifest>

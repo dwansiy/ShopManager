@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.kakao.auth.ApprovalType;
 import com.kakao.auth.AuthType;
@@ -15,6 +16,7 @@ import com.kakao.auth.KakaoAdapter;
 import com.kakao.auth.KakaoSDK;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -73,8 +75,9 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         context = this;
+
+        Fabric.with(this, new Crashlytics());
 
         KakaoSDK.init(new KakaoSDKAdapter());
 

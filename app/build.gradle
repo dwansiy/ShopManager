@@ -1,4 +1,15 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'realm-android'
 
 android {
@@ -31,6 +42,7 @@ repositories {
         url 'https://github.com/WickeDev/stetho-realm/raw/master/maven-repo'
     }
     maven { url "https://jitpack.io" }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -77,4 +89,9 @@ dependencies {
 
     //joda time
     implementation 'joda-time:joda-time:2.10'
+
+    //fabric crashlytics
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
+        transitive = true;
+    }
 }
