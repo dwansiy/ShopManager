@@ -46,30 +46,16 @@ public class KakaoStartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_kakao_start);
         realm = Realm.getDefaultInstance();
 
-        Profile profile = realm.where(Profile.class).findFirst();
-        if (profile == null) {
-            //프로필 없을때
-            ButterKnife.bind(this);
+        ButterKnife.bind(this);
 
-            btnSignIn.setOnClickListener(v -> {
-                if (callback == null) {
-                    callback = new SessionCallback();
-                    Session.getCurrentSession().addCallback(callback);
-                }
-                //Session.getCurrentSession().checkAndImplicitOpen();
-                Session.getCurrentSession().open(AuthType.KAKAO_TALK, KakaoStartActivity.this);
-            });
-        } else if (profile.getBusinessType() == null) {
-            //프로필 있지만 업종 없을때
-            final Intent intent = new Intent(this, SignUpActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            //프로필 등록되어있을때
-            final Intent intent = new Intent(this, CustomerActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        btnSignIn.setOnClickListener(v -> {
+            if (callback == null) {
+                callback = new SessionCallback();
+                Session.getCurrentSession().addCallback(callback);
+            }
+            //Session.getCurrentSession().checkAndImplicitOpen();
+            Session.getCurrentSession().open(AuthType.KAKAO_TALK, KakaoStartActivity.this);
+        });
     }
 
     @Override

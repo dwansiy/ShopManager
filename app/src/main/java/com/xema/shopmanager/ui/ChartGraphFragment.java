@@ -3,10 +3,12 @@ package com.xema.shopmanager.ui;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +21,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.utils.CommonUtil;
@@ -30,12 +29,9 @@ import com.xema.shopmanager.utils.CommonUtil;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindColor;
 import butterknife.BindView;
@@ -50,6 +46,10 @@ import io.realm.Sort;
  */
 
 public class ChartGraphFragment extends Fragment {
+    @BindView(R.id.tv_total_cash)
+    TextView tvTotalCash;
+    @BindView(R.id.tv_total_card)
+    TextView tvTotalCard;
     @BindView(R.id.tv_total_price)
     TextView tvTotalPrice;
     @BindView(R.id.bc_month_price)
@@ -210,22 +210,36 @@ public class ChartGraphFragment extends Fragment {
             bcMonthCount.setFitBars(true);
             bcMonthCount.animateY(1000, Easing.EasingOption.EaseOutSine);
         }
-
-        updateHeaderUI(priceEntryList);
     }
 
     private void initHeaderUI() {
+        tvTotalCash.setText(getString(R.string.common_loading));
+        tvTotalCard.setText(getString(R.string.common_loading));
         tvTotalPrice.setText(getString(R.string.common_loading));
     }
 
-    private void updateHeaderUI(List<BarEntry> barEntryList) {
+    private void updateHeaderUI(List<Sales> salesList) {
+        long cash = 0;
+        long card = 0;
         long price = 0;
-        if (barEntryList == null || barEntryList.isEmpty()) return;
-
-        for (BarEntry entry : barEntryList) {
-            price += (long) entry.getY();
+        for (Sales sales : salesList) {
+            long tmp = sales.getPrice();
+            if (sales.getType() == Sales.Type.CASH) {
+                cash += tmp;
+            } else if (sales.getType() == Sales.Type.CARD) {
+                card += tmp;
+            }
+            price += tmp;
         }
+
+        tvTotalCash.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(cash)));
+        tvTotalCard.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(card)));
         tvTotalPrice.setText(getString(R.string.format_price, CommonUtil.toDecimalFormat(price)));
+    }
+
+    @WorkerThread
+    private void sendListToUiThread(List<Sales> sales) {
+        new Handler(Looper.getMainLooper()).post(() -> updateHeaderUI(sales));
     }
 
     private class MonthValueFormatter implements IAxisValueFormatter {
@@ -276,6 +290,11 @@ public class ChartGraphFragment extends Fragment {
                 Map<String, List<BarEntry>> listMap = new HashMap<>();
 
                 RealmResults<Sales> list = realm.where(Sales.class).greaterThanOrEqualTo("selectedAt", cStart.getTime()).lessThan("selectedAt", cEnd.getTime()).sort("selectedAt", Sort.ASCENDING).findAll();
+                ChartGraphFragment fragment = ref.get();
+                if (fragment != null) {
+                    fragment.sendListToUiThread(realm.copyFromRealm(list));
+                }
+
                 List<BarEntry> priceEntryList = new ArrayList<>();
                 List<BarEntry> countEntryList = new ArrayList<>();
                 for (int i = 0; i < 12; i++) {

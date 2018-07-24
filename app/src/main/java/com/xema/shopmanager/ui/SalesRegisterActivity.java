@@ -9,11 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +22,9 @@ import com.xema.shopmanager.adapter.SalesRegisterAdapter;
 import com.xema.shopmanager.model.Category;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Product;
+import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.model.wrapper.CategoryWrapper;
-import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.utils.CommonUtil;
 
 import java.util.ArrayList;
@@ -61,6 +61,10 @@ public class SalesRegisterActivity extends AppCompatActivity {
     EditText edtMemo;
     @BindView(R.id.nsv_main)
     NestedScrollView nsvMain;
+    @BindView(R.id.rb_cash)
+    RadioButton rbCash;
+    @BindView(R.id.rb_card)
+    RadioButton rbCard;
 
     private List<CategoryWrapper> mCategoryList;
     private SalesRegisterAdapter mAdapter;
@@ -198,6 +202,13 @@ public class SalesRegisterActivity extends AppCompatActivity {
         }
         edtMemo.setText(sales.getMemo());
         CommonUtil.focusLastCharacter(edtMemo);
+        if (sales.getType() == Sales.Type.CASH) {
+            rbCard.setChecked(false);
+            rbCash.setChecked(true);
+        } else if (sales.getType() == Sales.Type.CARD) {
+            rbCash.setChecked(false);
+            rbCard.setChecked(true);
+        }
 
         List<Purchase> purchaseList = realm.copyFromRealm(sales.getPurchases());
         for (CategoryWrapper categoryWrapper : mCategoryList) {
@@ -258,6 +269,8 @@ public class SalesRegisterActivity extends AppCompatActivity {
         sales.setPurchases(purchaseList);
         sales.setSelectedAt(date);
         if (!TextUtils.isEmpty(memo)) sales.setMemo(memo);
+        if (rbCash.isChecked()) sales.setType(Sales.Type.CASH);
+        else if (rbCard.isChecked()) sales.setType(Sales.Type.CARD);
 
         Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
         if (person == null) return;
@@ -285,12 +298,15 @@ public class SalesRegisterActivity extends AppCompatActivity {
 
         Sales managedSales = realm.where(Sales.class).equalTo("id", salesId).findFirst();
         if (managedSales == null) return;
+
         Sales sales = realm.copyFromRealm(managedSales);
         final Date date = new Date(cvCalendar.getDate());
         final String memo = edtMemo.getText().toString();
         sales.setSelectedAt(date);
         if (!TextUtils.isEmpty(memo)) sales.setMemo(memo);
         sales.setPurchases(purchaseList);
+        if (rbCash.isChecked()) sales.setType(Sales.Type.CASH);
+        else if (rbCard.isChecked()) sales.setType(Sales.Type.CARD);
 
         Person person = realm.where(Person.class).equalTo("id", personId).findFirst();
         if (person == null) return;

@@ -78,8 +78,13 @@ public class AddProductDialog extends Dialog {
             String name = edtProductName.getText().toString();
             String price = edtProductPrice.getText().toString();
             if (!TextUtils.isEmpty(price) && TextUtils.isDigitsOnly(price)) {
-                listener.onRegister(name, Long.parseLong(price));
-                dismiss();
+                long priceLong = Long.parseLong(price);
+                if (!(priceLong > 0))
+                    Toast.makeText(mContext, mContext.getString(R.string.message_error_price_must_over_zero), Toast.LENGTH_SHORT).show();
+                else {
+                    listener.onRegister(name, priceLong);
+                    dismiss();
+                }
             } else {
                 Toast.makeText(mContext, mContext.getString(R.string.message_error_no_input_price), Toast.LENGTH_SHORT).show();
             }

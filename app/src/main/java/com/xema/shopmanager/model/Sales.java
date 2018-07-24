@@ -1,5 +1,7 @@
 package com.xema.shopmanager.model;
 
+import android.text.TextUtils;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,12 +16,17 @@ import io.realm.annotations.PrimaryKey;
  */
 
 public class Sales extends RealmObject {
+    public enum Type {
+        CASH, CARD
+    }
+
     @PrimaryKey
     private String id = UUID.randomUUID().toString();
     private Date createdAt = new Date();
     private Date selectedAt;
     private RealmList<Purchase> purchases;
     private String memo;
+    private String type = Type.CARD.toString(); //현금:cash, 카드:card(디폴트)
 
     @LinkingObjects("sales")
     private final RealmResults<Person> person = null;
@@ -66,6 +73,15 @@ public class Sales extends RealmObject {
 
     public RealmResults<Person> getPerson() {
         return person;
+    }
+
+    public Type getType() {
+        if (TextUtils.isEmpty(type)) return Type.CARD;
+        return Type.valueOf(type);
+    }
+
+    public void setType(Type type) {
+        this.type = type.toString();
     }
 
     public long getPrice() {

@@ -81,10 +81,15 @@ public class BaseApplication extends Application {
 
         KakaoSDK.init(new KakaoSDKAdapter());
 
-        // TODO: 2018-02-19 마이그레이션 설정파일 추가(https://realm.io/docs/java/latest/#migrations)
         Realm.init(this);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
-        Realm.setDefaultConfiguration(realmConfiguration);
+
+        //스키마 변경시마다 버전 올리기 (https://realm.io/docs/java/latest/#migrations)
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .schemaVersion(1)
+                .migration(new SchemaMigration())
+                .build();
+
+        Realm.setDefaultConfiguration(config);
 
         //벡터 이미지 활성화
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);

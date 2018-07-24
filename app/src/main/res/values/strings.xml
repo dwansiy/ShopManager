@@ -30,6 +30,8 @@
     <string name="common_sort">정렬</string>
     <string name="common_category">카테고리</string>
     <string name="common_delete">삭제</string>
+    <string name="common_cash">현금</string>
+    <string name="common_card">카드</string>
 
     <string name="action_edit">수정하기</string>
     <string name="action_delete">삭제하기</string>
@@ -78,6 +80,7 @@
     <string name="message_new_product">새로운 상품등록</string>
     <string name="hint_new_product">새 상품</string>
     <string name="message_error_no_input_price">금액을 입력해주세요</string>
+    <string name="message_error_price_must_over_zero">금액은 0원 이상이여야 합니다</string>
     <string name="message_delete_success">삭제되었습니다.</string>
 
     <!-- 정렬 -->

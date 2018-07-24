@@ -1,5 +1,7 @@
 package com.xema.shopmanager.model;
 
+import android.text.TextUtils;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -65,6 +67,7 @@ public class Profile extends RealmObject {
     }
 
     public BusinessType getBusinessType() {
+        if (TextUtils.isEmpty(businessType)) return null;
         return BusinessType.valueOf(businessType);
     }
 

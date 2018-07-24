@@ -32,6 +32,8 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -77,6 +79,7 @@ public class CustomerDetailActivity extends AppCompatActivity {
     private Person person;
 
     private boolean needUpdate = false;
+    private RealmAsyncTask transaction;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +109,16 @@ public class CustomerDetailActivity extends AppCompatActivity {
         initAdapter();
 
         updateUI(person, mList);
+    }
+
+    @Override
+    protected void onStop() {
+        if (mList != null)
+            mList.removeAllChangeListeners();
+        if (transaction != null && !transaction.isCancelled()) {
+            transaction.cancel();
+        }
+        super.onStop();
     }
 
     @Override
@@ -140,6 +153,12 @@ public class CustomerDetailActivity extends AppCompatActivity {
         mAdapter = new SalesAdapter(this, realm, mList);
         mAdapter.setHasStableIds(true);
         rvMain.setAdapter(mAdapter);
+
+        //todo 리팩토링 - 체인지리스너 기반으로 바꾸기
+        mList.addChangeListener(sales -> {
+            needUpdate = true;
+            updateUI(person, sales);
+        });
 
         mAdapter.setOnDeleteListener(this::deleteSales);
     }
@@ -242,7 +261,7 @@ public class CustomerDetailActivity extends AppCompatActivity {
     private void deleteSales(Sales sales, int position) {
         final String id = sales.getId();
 
-        realm.executeTransactionAsync(realm -> {
+        transaction = realm.executeTransactionAsync(realm -> {
             Sales s = realm.where(Sales.class).equalTo("id", id).findFirst();
             if (s == null) return;
             s.getPurchases().deleteAllFromRealm();
