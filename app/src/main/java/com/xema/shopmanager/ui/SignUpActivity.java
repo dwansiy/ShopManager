@@ -192,7 +192,7 @@ public class SignUpActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }, error -> {
-            error.printStackTrace();
+            //error.printStackTrace();
             view.setEnabled(true);
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
         });

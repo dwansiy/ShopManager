@@ -18,10 +18,10 @@ public class SchemaMigration implements RealmMigration {
 
         // 버전 1로 마이그레이션
         if (oldVersion == 0) {
-            RealmObjectSchema salesSchema = schema.get("Sales");
-            if (salesSchema != null)
-                salesSchema.addField("type", String.class);
-            oldVersion++;
+            //RealmObjectSchema salesSchema = schema.get("Sales");
+            //if (salesSchema != null)
+            //    salesSchema.addField("type", String.class);
+            //oldVersion++;
         }
 
     }

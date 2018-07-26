@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShopManager</string>
+    <string name="app_name">Shop Manager</string>
 
     <string name="kakao_app_key">45ca9c88a1f6be5987da7e1f7c7f61bf</string>
 
@@ -32,6 +32,8 @@
     <string name="common_delete">삭제</string>
     <string name="common_cash">현금</string>
     <string name="common_card">카드</string>
+    <string name="common_setting">설정</string>
+    <string name="common_profile">프로필</string>
 
     <string name="action_edit">수정하기</string>
     <string name="action_delete">삭제하기</string>
@@ -89,6 +91,13 @@
     <string name="sort_visit">방문 횟수순 정렬</string>
     <string name="sort_create">등록일순 정렬</string>
     <string name="sort_recent">최근 방문순 정렬</string>
+
+    <!-- 이미지 크롭 -->
+    <string name="title_crop_image">사진 자르기</string>
+
+    <!-- 권한 처리 -->
+    <string name="permission_dialog_title">권한 요청</string>
+    <string name="permission_need_permission">권한이 필요합니다.</string>
 
     <!-- 고객정보 화면 -->
     <string name="title_customer_info">고객 정보</string>
@@ -151,4 +160,10 @@
     <string name="business_category_etc">기타</string>
     <string name="business_name">개인 / 사업자명</string>
     <string name="message_error_not_select_business_type">업종을 선택해주세요</string>
+
+    <!-- 설정 -->
+    <string name="setting_title_quick_panel">메인메뉴 퀵패널 사용</string>
+    <string name="setting_detail_quick_panel">초성으로 이동할수 있도록 퀵패널을 사용합니다</string>
+    <string name="setting_title_contact">전화번호부 가져오기</string>
+    <string name="setting_detail_contact">기기내에 등록된 전화번호로 고객을 등록합니다</string>
 </resources>

@@ -104,4 +104,17 @@ public class Person extends RealmObject {
     public void setSales(RealmList<Sales> sales) {
         this.sales = sales;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", memo='" + memo + '\'' +
+                ", createdAt=" + createdAt +
+                ", profileImage='" + profileImage + '\'' +
+                ", sales=" + sales +
+                '}';
+    }
 }

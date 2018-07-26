@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:name=".common.BaseApplication"
@@ -37,9 +40,19 @@
         <activity android:name=".ui.CustomerDetailActivity" />
         <activity android:name=".ui.ChartListActivity" />
         <activity android:name=".ui.ChartGraphActivity" />
+        <activity android:name=".ui.SettingActivity" />
+        <activity
+            android:name=".ui.ProfileSettingActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ui.SalesRegisterActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+
+        <!-- image crop -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- kakao -->
         <meta-data

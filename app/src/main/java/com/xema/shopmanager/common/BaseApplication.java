@@ -85,7 +85,8 @@ public class BaseApplication extends Application {
 
         //스키마 변경시마다 버전 올리기 (https://realm.io/docs/java/latest/#migrations)
         RealmConfiguration config = new RealmConfiguration.Builder()
-                .schemaVersion(1)
+                .schemaVersion(0)
+                //.deleteRealmIfMigrationNeeded()
                 .migration(new SchemaMigration())
                 .build();
 

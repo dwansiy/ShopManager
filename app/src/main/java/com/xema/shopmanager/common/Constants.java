@@ -10,6 +10,10 @@ public class Constants {
     public static final int REQUEST_CODE_ADD_SALES = 310;
     public static final int REQUEST_CODE_EDIT_SALES = 311;
     public static final int REQUEST_CODE_CATEGORY = 320;
+    public static final int REQUEST_CODE_EDIT_PROFILE_SETTING = 330;
+    public static final int REQUEST_CODE_OPEN_GALLERY = 340;
+    public static final int REQUEST_CODE_CROP_IMAGE = 341;
+    public static final int REQUEST_CODE_SETTING = 350;
 
     public enum Sort {
         NAME, RECENT, PRICE, CREATE, VISIT;

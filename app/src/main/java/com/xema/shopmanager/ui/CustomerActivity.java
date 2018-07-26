@@ -18,10 +18,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -127,7 +129,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
-
     private void initToolbar() {
         setSupportActionBar(tbMain);
         tbMain.setTitle(getString(R.string.common_loading));
@@ -141,13 +142,25 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         nvDrawer.setNavigationItemSelectedListener(this);
 
         View headerView = nvDrawer.getHeaderView(0);
-        RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
-        TextView nameView = headerView.findViewById(R.id.tv_name);
-        TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
+        ImageView settingView = headerView.findViewById(R.id.iv_setting);
 
+        settingView.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ProfileSettingActivity.class);
+            startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_PROFILE_SETTING);
+        });
+
+        updateDrawer();
+    }
+
+    private void updateDrawer() {
         Profile profile = realm.where(Profile.class).findFirst();
 
         if (profile == null) return;
+
+        View headerView = nvDrawer.getHeaderView(0);
+        RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
+        TextView nameView = headerView.findViewById(R.id.tv_name);
+        TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
 
         GlideApp.with(this).load(profile.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
         nameView.setText(profile.getName());
@@ -168,10 +181,20 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         srlMain.setOnRefreshListener(() -> {
             attemptSearch(edtSearch.getText().toString());
         });
-        qpvMain.setOnQuickSideBarTouchListener(mQuickPanelListener);
-        rvMain.addOnScrollListener(mQuickPanelVisibilityListener);
         mAdapter.setOnDeleteListener(this::showDeleteDialog);
         mAdapter.setOnEditListener(this::attemptEdit);
+        enableQuickPanel(PreferenceHelper.loadQuickPanel(this));
+    }
+
+    private void enableQuickPanel(boolean enable) {
+        if (enable) {
+            qpvMain.setOnQuickSideBarTouchListener(mQuickPanelListener);
+            rvMain.addOnScrollListener(mQuickPanelVisibilityListener);
+        } else {
+            qpvMain.setVisibility(View.GONE);
+            qpvMain.setOnQuickSideBarTouchListener(null);
+            rvMain.clearOnScrollListeners();
+        }
     }
 
     private RecyclerView.OnScrollListener mQuickPanelVisibilityListener = new RecyclerView.OnScrollListener() {
@@ -252,7 +275,9 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         if (mList != null)
             mList.clear();
         else mList = new ArrayList<>();
+        long t1 = System.currentTimeMillis();
         mList.addAll(realm.copyFromRealm(realm.where(Person.class).findAll()));
+        Log.d("TIMEEE", (System.currentTimeMillis() - t1) / 1000 + "");
     }
 
     private void updateFilteredList(String searchText) {
@@ -301,20 +326,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
         if (srlMain.isRefreshing()) srlMain.setRefreshing(false);
     }
-
-    //private void queryCustomers() {
-    //    mList = realm.where(Person.class).findAll();
-    //    updateUI();
-    //}
-
-    //private void queryCustomers(String s) {
-    //    mList = realm.where(Person.class).contains("name", s).or().contains("phone", s).findAll();
-    //    updateUI();
-    //}
-
-    //private List<Person> getFilteredList(String s){
-    //    return realm.copyFromRealm(realm.where(Person.class).contains("name", s).or().contains("phone", s).findAll(););
-    //}
 
     private void sort(Constants.Sort sort) {
         if (mList == null || mList.size() == 0) return;
@@ -372,6 +383,10 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             CommonUtil.hideKeyboard(this);
             updateList();
             updateUI();
+        } else if (requestCode == Constants.REQUEST_CODE_EDIT_PROFILE_SETTING && resultCode == RESULT_OK) {
+            updateDrawer();
+        } else if (requestCode == Constants.REQUEST_CODE_SETTING && resultCode == RESULT_OK) {
+            enableQuickPanel(PreferenceHelper.loadQuickPanel(this));
         }
     }
 
@@ -396,9 +411,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     private void attemptSort(Constants.Sort sort) {
         PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
-        //updateList();
-        //updateUI();
-
         attemptSearch(edtSearch.getText().toString());
     }
 
@@ -446,6 +458,9 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         } else if (id == R.id.menu_nav_analysis) {
             Intent intent = new Intent(this, ChartListActivity.class);
             startActivity(intent);
+        } else if (id == R.id.menu_nav_setting) {
+            Intent intent = new Intent(this, SettingActivity.class);
+            startActivityForResult(intent, Constants.REQUEST_CODE_SETTING);
         }
 
         dlMain.closeDrawer(GravityCompat.START);

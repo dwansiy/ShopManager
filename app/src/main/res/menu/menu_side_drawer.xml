@@ -20,6 +20,10 @@
             android:id="@+id/menu_nav_analysis"
             android:icon="@drawable/ic_chart_gray_vector"
             android:title="@string/menu_nav_analysis" />
+        <item
+            android:id="@+id/menu_nav_setting"
+            android:icon="@drawable/ic_settings_gray_vector"
+            android:title="@string/common_setting" />
     </group>
 
     <item android:title="@string/menu_nav_information">
