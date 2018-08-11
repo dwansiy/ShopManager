@@ -23,6 +23,7 @@ public class PreferenceHelper {
         return Constants.Sort.toSort(s);
     }
 
+    @Deprecated
     public static void saveQuickPanel(Context context, boolean checked) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_KEY_LOCAL, MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = preferences.edit();
@@ -30,6 +31,7 @@ public class PreferenceHelper {
         prefsEditor.apply();
     }
 
+    @Deprecated
     public static boolean loadQuickPanel(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_KEY_LOCAL, MODE_PRIVATE);
         return preferences.getBoolean(PREF_KEY_LOCAL_QUICK_PANEL, true);

@@ -1,10 +1,9 @@
 package com.xema.shopmanager.ui;
 
-import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Vibrator;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,11 +17,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,24 +35,14 @@ import com.xema.shopmanager.adapter.CustomerAdapter;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.common.PreferenceHelper;
-import com.xema.shopmanager.comparator.PersonCreateComparator;
-import com.xema.shopmanager.comparator.PersonNameComparator;
-import com.xema.shopmanager.comparator.PersonPriceComparator;
-import com.xema.shopmanager.comparator.PersonRecentComparator;
-import com.xema.shopmanager.comparator.PersonVisitComparator;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Profile;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
-import com.xema.shopmanager.utils.DelayTextWatcher;
-import com.xema.shopmanager.utils.InitialSoundUtil;
-import com.xema.shopmanager.widget.QuickPanelTipView;
-import com.xema.shopmanager.widget.QuickPanelView;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -59,9 +50,13 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import io.realm.Sort;
+import io.realm.internal.IOException;
 
-// TODO: 2018-07-03 quick panel 나타나는거 조정할수있게 옵션화면 만들기 -> 사용자 이름, 가게명 바꾸기나 등등도 가능하도록
-public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Filter.FilterListener {
+    private static final String TAG = CustomerActivity.class.getSimpleName();
     @BindView(R.id.tb_main)
     Toolbar tbMain;
     @BindView(R.id.edt_search)
@@ -78,37 +73,24 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     DrawerLayout dlMain;
     @BindView(R.id.srl_main)
     SwipeRefreshLayout srlMain;
-    @BindView(R.id.qpv_main)
-    QuickPanelView qpvMain;
-    @BindView(R.id.qptv_main)
-    QuickPanelTipView qptvMain;
 
     private Realm realm;
 
-    private List<Person> mList;
     private CustomerAdapter mAdapter;
-    private LinearLayoutManager mLayoutManager;
-
-    private Vibrator mVibrator;
 
     private RealmAsyncTask transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer);
         realm = Realm.getDefaultInstance();
+        setContentView(R.layout.activity_customer);
         ButterKnife.bind(this);
-
-        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         initToolbar();
         initDrawer();
-        updateList();
-        initAdapter();
         initListeners();
-
-        updateUI();
+        setUpAdapter();
     }
 
     @Override
@@ -117,16 +99,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             transaction.cancel();
         }
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        rvMain.setAdapter(null);
-        if (realm != null) {
-            realm.close();
-            realm = null;
-        }
     }
 
     private void initToolbar() {
@@ -138,30 +110,24 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dlMain, tbMain, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         dlMain.addDrawerListener(toggle);
         toggle.syncState();
-
         nvDrawer.setNavigationItemSelectedListener(this);
-
         View headerView = nvDrawer.getHeaderView(0);
         ImageView settingView = headerView.findViewById(R.id.iv_setting);
-
         settingView.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfileSettingActivity.class);
             startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_PROFILE_SETTING);
         });
-
         updateDrawer();
     }
 
     private void updateDrawer() {
+        if (realm == null) return;
         Profile profile = realm.where(Profile.class).findFirst();
-
         if (profile == null) return;
-
         View headerView = nvDrawer.getHeaderView(0);
         RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
         TextView nameView = headerView.findViewById(R.id.tv_name);
         TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
-
         GlideApp.with(this).load(profile.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
         nameView.setText(profile.getName());
         businessNameView.setText(profile.getBusinessName());
@@ -172,182 +138,81 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             Intent intent = new Intent(CustomerActivity.this, AddCustomerActivity.class);
             startActivityForResult(intent, Constants.REQUEST_CODE_ADD_CUSTOMER);
         });
-        edtSearch.addTextChangedListener(new DelayTextWatcher() {
+        edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void delayedChanged(Editable editable) {
-                runOnUiThread(() -> attemptSearch(editable.toString()));
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                attemptSearch(editable.toString());
             }
         });
         srlMain.setOnRefreshListener(() -> {
             attemptSearch(edtSearch.getText().toString());
         });
-        mAdapter.setOnDeleteListener(this::showDeleteDialog);
-        mAdapter.setOnEditListener(this::attemptEdit);
-        enableQuickPanel(PreferenceHelper.loadQuickPanel(this));
     }
-
-    private void enableQuickPanel(boolean enable) {
-        if (enable) {
-            qpvMain.setOnQuickSideBarTouchListener(mQuickPanelListener);
-            rvMain.addOnScrollListener(mQuickPanelVisibilityListener);
-        } else {
-            qpvMain.setVisibility(View.GONE);
-            qpvMain.setOnQuickSideBarTouchListener(null);
-            rvMain.clearOnScrollListeners();
-        }
-    }
-
-    private RecyclerView.OnScrollListener mQuickPanelVisibilityListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                qpvMain.setVisibility(View.VISIBLE);
-            } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                delayedHide();
-            }
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-    };
-
-    private Handler mHideHandler = new Handler();
-    private Runnable mHideRunnable = () -> qpvMain.setVisibility(View.GONE);
-
-    private void delayedHide() {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, 1800);
-    }
-
-    private QuickPanelView.OnQuickSideBarTouchListener mQuickPanelListener = new QuickPanelView.OnQuickSideBarTouchListener() {
-        @Override
-        public void onLetterChanged(String letter, int position, float y) {
-            qptvMain.setText(letter, position, y);
-            mVibrator.vibrate(2);
-            if (mList == null || mList.isEmpty()) return;
-
-            for (int i = 0; i < mList.size(); i++) {
-                Person person = mList.get(i);
-                String name = person.getName();
-                if (!TextUtils.isEmpty(name)) {
-                    if (InitialSoundUtil.matchString(name.substring(0, 1), letter)) {
-                        mLayoutManager.scrollToPositionWithOffset(i, 0);
-                        //rvMain.scrollToPosition(mList.indexOf(person));
-                        return;
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onLetterTouching(boolean touching) {
-            if (!touching) {
-                delayedHide();
-                qptvMain.setVisibility(View.GONE);
-            } else {
-                mHideHandler.removeCallbacks(mHideRunnable);
-                qptvMain.setVisibility(View.VISIBLE);
-            }
-        }
-    };
 
     private void attemptSearch(String s) {
-        if (TextUtils.isEmpty(s)) {
-            updateList();
-            updateUI();
-        } else {
-            updateFilteredList(s);
-            updateUI();
-            tbMain.setTitle(getString(R.string.format_search_customer, mList.size()));
-        }
+        if (mAdapter == null) return;
+        mAdapter.getFilter().filter(s, this); //Async
     }
 
-    private void initAdapter() {
-        mLayoutManager = new LinearLayoutManager(this);
-        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-        rvMain.setLayoutManager(mLayoutManager);
-        mAdapter = new CustomerAdapter(this, mList);
+    private void setUpAdapter() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rvMain.setLayoutManager(layoutManager);
+        mAdapter = new CustomerAdapter(this, realm, queryData());
         mAdapter.setHasStableIds(true);
+        mAdapter.setOnDeleteListener(this::showDeleteDialog);
+        mAdapter.setOnEditListener(this::attemptEdit);
         rvMain.setAdapter(mAdapter);
+
+        updateUI();
     }
 
-    private void updateList() {
-        if (realm == null) return;
-        if (mList != null)
-            mList.clear();
-        else mList = new ArrayList<>();
-        long t1 = System.currentTimeMillis();
-        mList.addAll(realm.copyFromRealm(realm.where(Person.class).findAll()));
-        Log.d("TIMEEE", (System.currentTimeMillis() - t1) / 1000 + "");
-    }
-
-    private void updateFilteredList(String searchText) {
-        if (realm == null) return;
-        if (mList != null)
-            mList.clear();
-        else mList = new ArrayList<>();
-        List<Person> filteredList = realm.copyFromRealm(realm.where(Person.class).findAll());
-        for (Person person : filteredList) {
-            String name = person.getName();
-            String phone = person.getPhone();
-            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone)) {
-                if (name.contains(searchText)) {
-                    mList.add(person);
-                } else if (InitialSoundUtil.matchString(name, searchText)) {
-                    mList.add(person);
-                } else if (phone.contains(searchText)) {
-                    mList.add(person);
-                }
-            } else if (!TextUtils.isEmpty(name)) {
-                if (name.contains(searchText)) {
-                    mList.add(person);
-                } else if (InitialSoundUtil.matchString(name, searchText)) {
-                    mList.add(person);
-                }
-            } else if (!TextUtils.isEmpty(phone)) {
-                if (phone.contains(searchText)) {
-                    mList.add(person);
-                }
-            }
-        }
-    }
-
-    private void updateUI() {
-        if (mList == null || mList.isEmpty()) {
-            rvMain.setVisibility(View.GONE);
-            llEmpty.setVisibility(View.VISIBLE);
-        } else {
-            sort(PreferenceHelper.loadSortMode(this));
-            llEmpty.setVisibility(View.GONE);
-            rvMain.setVisibility(View.VISIBLE);
-        }
-        tbMain.setTitle(getString(R.string.format_count_customer, mList.size()));
-
-        mAdapter.notifyDataSetChanged();
-
-        if (srlMain.isRefreshing()) srlMain.setRefreshing(false);
-    }
-
-    private void sort(Constants.Sort sort) {
-        if (mList == null || mList.size() == 0) return;
-        switch (sort) {
+    //Managed list 는 custom sort 불가..
+    private RealmResults<Person> queryData() {
+        if (realm == null) return null;
+        RealmQuery<Person> q = realm.where(Person.class);
+        switch (PreferenceHelper.loadSortMode(this)) {
             case NAME:
-                Collections.sort(mList, new PersonNameComparator());
-                break;
-            case PRICE:
-                Collections.sort(mList, new PersonPriceComparator());
-                break;
-            case VISIT:
-                Collections.sort(mList, new PersonVisitComparator());
+                q.sort("name", Sort.ASCENDING);
                 break;
             case CREATE:
-                Collections.sort(mList, new PersonCreateComparator());
-                break;
-            case RECENT:
-                Collections.sort(mList, new PersonRecentComparator());
+                q.sort("createdAt", Sort.DESCENDING);
                 break;
             default:
                 break;
         }
+        return q.findAll();
+    }
+
+    //Show empty view if needed, Change toolbar status
+    private void updateUI() {
+        if (mAdapter == null) return;
+
+        boolean isInSearchMode = edtSearch.getText().length() != 0;
+        int size = mAdapter.getData() == null ? 0 : mAdapter.getData().size();
+
+        if (isInSearchMode) {
+            tbMain.setTitle(getString(R.string.format_search_customer, size));
+        } else {
+            tbMain.setTitle(getString(R.string.format_count_customer, size));
+        }
+        if (size <= 0) {
+            rvMain.setVisibility(View.GONE);
+            llEmpty.setVisibility(View.VISIBLE);
+        } else {
+            llEmpty.setVisibility(View.GONE);
+            rvMain.setVisibility(View.VISIBLE);
+        }
+        if (srlMain != null && srlMain.isRefreshing())
+            srlMain.setRefreshing(false);
     }
 
     @Override
@@ -359,59 +224,29 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
+    //REALM ADAPTER 에서 AUTO UPDATE 사용중
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.REQUEST_CODE_ADD_CUSTOMER && resultCode == RESULT_OK) {
-            edtSearch.getText().clear();
-            CommonUtil.hideKeyboard(this);
-            updateList();
-            updateUI();
-        } else if (requestCode == Constants.REQUEST_CODE_ADD_SALES && resultCode == RESULT_OK) {
-            edtSearch.getText().clear();
-            CommonUtil.hideKeyboard(this);
-            updateList();
-            updateUI();
-        } else if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
-            attemptSearch(edtSearch.getText().toString());
             //edtSearch.getText().clear();
             //CommonUtil.hideKeyboard(this);
-            //updateList();
-            //updateUI();
+            //queryList();
+        } else if (requestCode == Constants.REQUEST_CODE_ADD_SALES && resultCode == RESULT_OK) {
+            //edtSearch.getText().clear();
+            //CommonUtil.hideKeyboard(this);
+            //queryList();
+        } else if (requestCode == Constants.REQUEST_CODE_EDIT_CUSTOMER && resultCode == RESULT_OK) {
+            //edtSearch.getText().clear();
+            //CommonUtil.hideKeyboard(this);
+            //queryList();
         } else if (requestCode == Constants.REQUEST_CODE_CATEGORY && resultCode == RESULT_OK) {
-            edtSearch.getText().clear();
-            CommonUtil.hideKeyboard(this);
-            updateList();
-            updateUI();
+            //edtSearch.getText().clear();
+            //CommonUtil.hideKeyboard(this);
+            //queryList();
         } else if (requestCode == Constants.REQUEST_CODE_EDIT_PROFILE_SETTING && resultCode == RESULT_OK) {
             updateDrawer();
-        } else if (requestCode == Constants.REQUEST_CODE_SETTING && resultCode == RESULT_OK) {
-            enableQuickPanel(PreferenceHelper.loadQuickPanel(this));
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_sort, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.menu_sort) {
-            SortBottomSheetDialog dialog = new SortBottomSheetDialog(this, R.style.FullScreenTransparentDialog);
-            dialog.setOnSortListener(this::attemptSort);
-            dialog.show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void attemptSort(Constants.Sort sort) {
-        PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
-        attemptSearch(edtSearch.getText().toString());
     }
 
     private void showDeleteDialog(Person person, int position) {
@@ -449,21 +284,82 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_sort, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_sort) {
+            SortBottomSheetDialog dialog = new SortBottomSheetDialog(this, R.style.FullScreenTransparentDialog);
+            dialog.setOnSortListener(this::attemptSort);
+            dialog.show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void attemptSort(Constants.Sort sort) {
+        PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
+        attemptSearch(edtSearch.getText().toString());
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.menu_nav_category) {
             Intent intent = new Intent(this, CategoryActivity.class);
             startActivityForResult(intent, Constants.REQUEST_CODE_CATEGORY);
+        } else if (id == R.id.menu_nav_data) {
+            Intent intent = new Intent(this, BackUpActivity.class);
+            startActivity(intent);
+            // TODO: 2018-08-09  csv 파일로 변환하는건 프리미엄 모델에서 해주는걸로. api가 없어서 수도으로 csv 파일 생성하는 코드 만들어줘야함
+            // TODO: 2018-08-09 스키마 버전 고려하고, 프로필 데이터는 realm 에서 제외해야할듯(서로 다른 profile일 경우 카카오톡에서 꼬임... 아니면 카카오톡 로그인을 삭제하거나 해야할듯)
+            //try {
+            //    final File file = new File(Environment.getExternalStorageDirectory().getPath().concat("/default.realm"));
+            //    if (file.exists()) {
+            //        //noinspection ResultOfMethodCallIgnored
+            //        file.delete();
+            //    }
+            //    realm.writeCopyTo(file);
+            //    Toast.makeText(this, "Success export realm file", Toast.LENGTH_SHORT).show();
+            //} catch (IOException e) {
+            //    e.printStackTrace();
+            //}
         } else if (id == R.id.menu_nav_analysis) {
             Intent intent = new Intent(this, ChartListActivity.class);
             startActivity(intent);
-        } else if (id == R.id.menu_nav_setting) {
-            Intent intent = new Intent(this, SettingActivity.class);
-            startActivityForResult(intent, Constants.REQUEST_CODE_SETTING);
+        }
+        //else if (id == R.id.menu_nav_setting) {
+        //    Intent intent = new Intent(this, SettingActivity.class);
+        //    startActivityForResult(intent, Constants.REQUEST_CODE_SETTING);
+        //}
+        else if (id == R.id.menu_nav_review) {
+            final String appPackageName = getPackageName();
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            }
+        } else if (id == R.id.menu_nav_report) {
+            Uri uri = Uri.parse(CommonUtil.makeReportString(this, realm));
+            Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+            startActivity(it);
+        } else if (id == R.id.menu_nav_version) {
+            Intent intent = new Intent(this, VersionActivity.class);
+            startActivity(intent);
         }
 
         dlMain.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onFilterComplete(int count) {
+        updateUI();
     }
 }

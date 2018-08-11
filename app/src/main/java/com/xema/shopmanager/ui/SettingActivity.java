@@ -19,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import com.xema.shopmanager.R;
-import com.xema.shopmanager.common.PreferenceHelper;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.utils.PermissionUtil;
 
@@ -40,12 +39,12 @@ public class SettingActivity extends AppCompatActivity {
     ImageView ivBack;
     @BindView(R.id.tb_main)
     Toolbar tbMain;
-    @BindView(R.id.ll_setting_quick_panel)
-    LinearLayout llSettingQuickPanel;
+    //@BindView(R.id.ll_setting_quick_panel)
+    //LinearLayout llSettingQuickPanel;
     @BindView(R.id.ll_setting_contact)
     LinearLayout llSettingContact;
-    @BindView(R.id.s_quick_panel)
-    Switch sQuickPanel;
+    //@BindView(R.id.s_quick_panel)
+    //Switch sQuickPanel;
     @BindView(R.id.pb_contact)
     ProgressBar pbContact;
 
@@ -56,7 +55,7 @@ public class SettingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         initToolbar();
-        initPreferenceData();
+        //initPreferenceData();
         initListeners();
     }
 
@@ -66,23 +65,24 @@ public class SettingActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void initPreferenceData() {
-        sQuickPanel.setChecked(PreferenceHelper.loadQuickPanel(this));
-    }
+    //Deprecated
+    //private void initPreferenceData() {
+    //    sQuickPanel.setChecked(PreferenceHelper.loadQuickPanel(this));
+    //}
 
     private void initListeners() {
         ivBack.setOnClickListener(v -> finish());
-        llSettingQuickPanel.setOnClickListener(this::attemptQuickPanel);
-        llSettingContact.setOnClickListener(this::attemptContact);
+        //llSettingQuickPanel.setOnClickListener(this::attemptQuickPanel);
+        llSettingContact.setOnClickListener(this::attemptAddDeviceContacts);
     }
 
-    private void attemptQuickPanel(View view) {
-        boolean checked = sQuickPanel.isChecked();
-        sQuickPanel.setChecked(!checked);
-        PreferenceHelper.saveQuickPanel(this, !checked);
-    }
+    //private void attemptQuickPanel(View view) {
+    //    boolean checked = sQuickPanel.isChecked();
+    //    sQuickPanel.setChecked(!checked);
+    //    PreferenceHelper.saveQuickPanel(this, !checked);
+    //}
 
-    private void attemptContact(View view) {
+    private void attemptAddDeviceContacts(View view) {
         if (PermissionUtil.checkAndRequestPermission(this, PermissionUtil.PERMISSION_CONTACT, Manifest.permission.READ_CONTACTS)) {
             new ContactAsyncTask(this).execute();
         }
@@ -107,7 +107,7 @@ public class SettingActivity extends AppCompatActivity {
         super.finish();
     }
 
-    // TODO: 2018-07-26  이름으로 중복체크하면 안되고... 이름+폰번호?? 애매하네... 그리고 메인화면에서 연락처 일정치 이상이면 병목현상일어남 -> 메인쓰레드에서 realm 처리 전부 백그라운드로 빼자
+    // TODO: 2018-07-26  이름으로 중복체크하면 안되고... 이름+폰번호?? 애매하네...
     private static final class ContactAsyncTask extends AsyncTask<Void, Void, Void> {
         private final WeakReference<SettingActivity> ref;
         private static final String[] PROJECTION = new String[]{ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME};
@@ -150,6 +150,7 @@ public class SettingActivity extends AppCompatActivity {
 
             try (Realm bgRealm = Realm.getDefaultInstance()) {
                 List<Person> contacts = new ArrayList<>();
+                //List<String> names = new ArrayList<>();
                 while (cur.moveToNext()) {
                     String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                     String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -169,10 +170,13 @@ public class SettingActivity extends AppCompatActivity {
                             person.setPhone(phone);
                         contacts.add(person);
                     }
+                    //names.add(name);
                 }
                 bgRealm.beginTransaction();
                 bgRealm.copyToRealmOrUpdate(contacts);
                 bgRealm.commitTransaction();
+
+                bgRealm.close();
             }
             cur.close();
             return null;

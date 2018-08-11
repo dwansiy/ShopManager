@@ -29,6 +29,7 @@
         android:background="@color/colorGray4" />
 
     <CheckedTextView
+        android:visibility="gone"
         android:id="@+id/tv_sort_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,11 +46,13 @@
         android:textSize="14sp" />
 
     <View
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/colorGray4" />
 
     <CheckedTextView
+        android:visibility="gone"
         android:id="@+id/tv_sort_visit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,6 +69,7 @@
         android:textSize="14sp" />
 
     <View
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/colorGray4" />
@@ -92,6 +96,7 @@
         android:background="@color/colorGray4" />
 
     <CheckedTextView
+        android:visibility="gone"
         android:id="@+id/tv_sort_recent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

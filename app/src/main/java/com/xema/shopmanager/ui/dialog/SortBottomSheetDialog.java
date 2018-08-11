@@ -16,6 +16,8 @@ import com.xema.shopmanager.common.PreferenceHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+// TODO: 2018-08-04
+/* 관리 객체에서는 CUSTOM SORT 불가능... PRICE, VISIT, RECENT 정렬은 Person 객체에 필드 따로 빼서 구현하는식으로 할것 */
 public class SortBottomSheetDialog extends BottomSheetDialog {
 
     @BindView(R.id.tv_sort_name)

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.xema.shopmanager.R;
 
+@Deprecated
 public class QuickPanelTipView extends RelativeLayout {
     private TextView mTipsView;
 

@@ -166,4 +166,23 @@
     <string name="setting_detail_quick_panel">초성으로 이동할수 있도록 퀵패널을 사용합니다</string>
     <string name="setting_title_contact">전화번호부 가져오기</string>
     <string name="setting_detail_contact">기기내에 등록된 전화번호로 고객을 등록합니다</string>
+
+    <!-- 버그 제보 -->
+    <string name="report_body_long">OS Version : %s\nApp Version : %s\nUser Id : %s\nKakao Id : %s\nUser Name : %s\n\n\n</string>
+    <string name="report_body_short">OS Version : %s\nApp Version : %s\n\n\n</string>
+
+    <!-- 버전 체크 -->
+    <string name="title_version_check">버전 확인</string>
+    <string name="action_update">업데이트</string>
+    <string name="current_version">현재버전</string>
+    <string name="latest_version">최신버전</string>
+    <string name="message_network_not_enabled">네트워크가 불안정합니다</string>
+    <string name="message_version_latest">최신버전입니다</string>
+
+    <!-- 데이터 백업 -->
+    <string name="title_data_back_up">데이터 백업 / 복구</string>
+    <string name="action_make_back_up">백업 만들기</string>
+    <string name="action_export_back_up">백업 파일 내보내기</string>
+    <string name="action_import_back_up">백업 파일 가져오기</string>
+    <string name="message_back_up_file_path">%s\n경로에 백업파일이 생성됩니다</string>
 </resources>

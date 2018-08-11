@@ -1,5 +1,6 @@
 package com.xema.shopmanager.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,40 +9,43 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
+import com.xema.shopmanager.common.PreferenceHelper;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.model.Sales;
-import com.xema.shopmanager.ui.CustomerActivity;
 import com.xema.shopmanager.ui.CustomerDetailActivity;
+import com.xema.shopmanager.ui.CustomerActivity;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.RealmUtils;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Case;
+import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.Sort;
 
-/**
- * Created by diygame5 on 2017-09-18.
- * Project : Buyble
- */
-
-public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListItemViewHolder> {
+public class CustomerAdapter extends RealmRecyclerViewAdapter<Person, CustomerAdapter.ListItemViewHolder> implements Filterable {
     private static final String TAG = CustomerAdapter.class.getSimpleName();
-
     private Context mContext = null;
-    private List<Person> mDataList = null;
+    private Realm realm;
+
+    private OnDeleteListener onDeleteListener;
+    private OnEditListener onEditListener;
 
     public interface OnDeleteListener {
         void onDelete(Person person, int position);
@@ -51,21 +55,10 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         void onEdit(Person person, int position);
     }
 
-    private OnDeleteListener onDeleteListener;
-    private OnEditListener onEditListener;
-
-    public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
-        this.onDeleteListener = onDeleteListener;
-    }
-
-    public void setOnEditListener(OnEditListener onEditListener) {
-        this.onEditListener = onEditListener;
-    }
-
-    public CustomerAdapter(Context context, List<Person> personList) {
-        super();
+    public CustomerAdapter(Context context, Realm realm, OrderedRealmCollection<Person> data) {
+        super(data, true);
         this.mContext = context;
-        this.mDataList = personList;
+        this.realm = realm;
     }
 
     @NonNull
@@ -78,27 +71,75 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
 
     @Override
     public void onBindViewHolder(@NonNull ListItemViewHolder holder, int position) {
-        final Person person = mDataList.get(position);
-
+        final Person person = getItem(position);
         holder.bind(mContext, person, position, onDeleteListener, onEditListener);
     }
 
     @Override
     public long getItemId(int position) {
-        if (mDataList == null) return position;
-
-        Person person = mDataList.get(position);
+        Person person = getItem(position);
         if (person == null) return position;
-
         return UUID.fromString(person.getId()).getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     @Override
     public int getItemCount() {
-        return mDataList == null ? 0 : mDataList.size();
+        return getData() == null ? 0 : getData().size();
     }
 
-    final static class ListItemViewHolder extends RecyclerView.ViewHolder {
+    private void filterResults(String text, Constants.Sort sort) {
+        if (TextUtils.isEmpty(text)) {
+            if (sort == Constants.Sort.NAME) {
+                updateData(realm.where(Person.class).sort("name", Sort.ASCENDING).findAll());
+                return;
+            } else if (sort == Constants.Sort.CREATE) {
+                updateData(realm.where(Person.class).sort("createdAt", Sort.DESCENDING).findAll());
+                return;
+            }
+        } else {
+            if (sort == Constants.Sort.NAME) {
+                updateData(realm.where(Person.class).contains("name", text, Case.INSENSITIVE).or().contains("phone", text, Case.INSENSITIVE).sort("name", Sort.ASCENDING).findAll());
+                return;
+            } else if (sort == Constants.Sort.CREATE) {
+                updateData(realm.where(Person.class).contains("name", text, Case.INSENSITIVE).or().contains("phone", text, Case.INSENSITIVE).sort("createdAt", Sort.DESCENDING).findAll());
+                return;
+            }
+        }
+        updateData(realm.where(Person.class).sort("name", Sort.ASCENDING).findAll()); //error
+    }
+
+    public Filter getFilter() {
+        return new SearchFilter(this);
+    }
+
+    private class SearchFilter extends Filter {
+        private final CustomerAdapter adapter;
+
+        private SearchFilter(CustomerAdapter adapter) {
+            super();
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return new FilterResults();
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.filterResults(constraint.toString(), PreferenceHelper.loadSortMode(mContext));
+        }
+    }
+
+    public void setOnDeleteListener(OnDeleteListener onDeleteListener) {
+        this.onDeleteListener = onDeleteListener;
+    }
+
+    public void setOnEditListener(OnEditListener onEditListener) {
+        this.onEditListener = onEditListener;
+    }
+
+    final static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.iv_profile)
         ImageView ivProfile;
         @BindView(R.id.tv_profile)
@@ -113,14 +154,6 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         TextView tvRecent;
         @BindView(R.id.tv_total)
         TextView tvTotal;
-        @BindView(R.id.ll_container)
-        LinearLayout llContainer;
-        @BindView(R.id.iv_edit)
-        ImageView ivEdit;
-        @BindView(R.id.iv_delete)
-        ImageView ivDelete;
-        @BindView(R.id.sml_main)
-        SwipeMenuLayout smlMain;
 
         ListItemViewHolder(View itemView, int viewType) {
             super(itemView);
@@ -128,25 +161,28 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
         }
 
         private void bind(Context context, Person person, int position, OnDeleteListener onDeleteListener, OnEditListener onEditListener) {
-            llContainer.setOnClickListener(v -> {
+            itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, CustomerDetailActivity.class);
                 intent.putExtra("id", person.getId());
                 if (context instanceof CustomerActivity)
                     ((CustomerActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_ADD_SALES);
                 else context.startActivity(intent);
             });
-
-            ivDelete.setOnClickListener(v -> {
-                if (onDeleteListener != null) onDeleteListener.onDelete(person, position);
+            itemView.setOnLongClickListener(v -> {
+                PopupMenu p = new PopupMenu(context, v);
+                if (!(context instanceof Activity)) return false;
+                ((Activity) context).getMenuInflater().inflate(R.menu.menu_edit_delete, p.getMenu());
+                p.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.menu_edit) {
+                        if (onEditListener != null) onEditListener.onEdit(person, position);
+                    } else if (item.getItemId() == R.id.menu_delete) {
+                        if (onDeleteListener != null) onDeleteListener.onDelete(person, position);
+                    }
+                    return false;
+                });
+                p.show();
+                return false;
             });
-
-            ivEdit.setOnClickListener(v -> {
-                if (onEditListener != null) {
-                    smlMain.smoothClose();
-                    onEditListener.onEdit(person, position);
-                }
-            });
-
             String profileImage = person.getProfileImage();
             if (TextUtils.isEmpty(profileImage)) {
                 GlideApp.with(context).load(R.drawable.ic_dark_gray).centerCrop().circleCrop().into(ivProfile);
@@ -177,6 +213,11 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.ListIt
                 }
                 tvTotal.setText(context.getString(R.string.format_price, CommonUtil.toDecimalFormat(total)));
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+
         }
     }
 }

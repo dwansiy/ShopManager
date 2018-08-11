@@ -151,7 +151,7 @@ public class CustomerDetailActivity extends AppCompatActivity {
         //mList = new RealmList<>();
         mList = person.getSales().sort("selectedAt", Sort.DESCENDING);
         mAdapter = new SalesAdapter(this, realm, mList);
-        mAdapter.setHasStableIds(true);
+        //mAdapter.setHasStableIds(true);
         rvMain.setAdapter(mAdapter);
 
         //todo 리팩토링 - 체인지리스너 기반으로 바꾸기

@@ -25,11 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.CustomerActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.KakaoStartActivity" />
         <activity
             android:name=".ui.SignUpActivity"
@@ -41,6 +36,9 @@
         <activity android:name=".ui.ChartListActivity" />
         <activity android:name=".ui.ChartGraphActivity" />
         <activity android:name=".ui.SettingActivity" />
+        <activity android:name=".ui.CustomerActivity" />
+        <activity android:name=".ui.VersionActivity" />
+        <activity android:name=".ui.BackUpActivity" />
         <activity
             android:name=".ui.ProfileSettingActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />

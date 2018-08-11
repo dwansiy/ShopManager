@@ -13,6 +13,7 @@
         android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/abl_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay">
@@ -21,12 +22,13 @@
                 android:id="@+id/tb_main"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorGray2"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:title="@string/common_loading" />
 
         </android.support.design.widget.AppBarLayout>
 
-        <include layout="@layout/content_customer"/>
+        <include layout="@layout/content_customer" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_add"

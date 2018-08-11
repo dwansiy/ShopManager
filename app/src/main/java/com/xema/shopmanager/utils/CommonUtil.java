@@ -3,9 +3,12 @@ package com.xema.shopmanager.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.MailTo;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -18,12 +21,21 @@ import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.xema.shopmanager.BuildConfig;
+import com.xema.shopmanager.R;
+import com.xema.shopmanager.model.Person;
+import com.xema.shopmanager.model.Profile;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import io.realm.Realm;
 
 import static android.content.ContentValues.TAG;
 import static com.kakao.util.helper.Utility.getPackageInfo;
@@ -162,5 +174,58 @@ public class CommonUtil {
             }
         }
         return null;
+    }
+
+    public static List<Person> filterByNameAndPhone(List<Person> originalList, String searchText) {
+        if (originalList == null || originalList.isEmpty()) return null;
+
+        List<Person> filteredList = new ArrayList<>();
+        for (Person person : originalList) {
+            String name = person.getName();
+            String phone = person.getPhone();
+            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(phone)) {
+                if (name.contains(searchText)) {
+                    filteredList.add(person);
+                } else if (phone.contains(searchText)) {
+                    filteredList.add(person);
+                } else if (InitialSoundUtil.matchString(name, searchText)) {
+                    filteredList.add(person);
+                }
+            } else if (!TextUtils.isEmpty(name)) {
+                if (name.contains(searchText)) {
+                    filteredList.add(person);
+                } else if (InitialSoundUtil.matchString(name, searchText)) {
+                    filteredList.add(person);
+                }
+            } else if (!TextUtils.isEmpty(phone)) {
+                if (phone.contains(searchText)) {
+                    filteredList.add(person);
+                }
+            }
+        }
+        return filteredList;
+    }
+
+    public static String makeReportString(Context context, Realm realm) {
+        String bodyString;
+        if (realm != null && !realm.isClosed()) {
+            Profile profile = realm.where(Profile.class).findFirst();
+            if (profile != null) {
+                bodyString = context.getString(R.string.report_body_long, getAndroidVersion(), getAppVersion(), profile.getId(), String.valueOf(profile.getKakaoId()), profile.getName());
+                return "mailto:xema027@gmail.com?" + "&body=" + Uri.encode(bodyString);
+            }
+        }
+        bodyString = context.getString(R.string.report_body_short, getAndroidVersion(), getAppVersion());
+        return "mailto:xema027@gmail.com?" + "&body=" + Uri.encode(bodyString);
+    }
+
+    private static String getAndroidVersion() {
+        String release = Build.VERSION.RELEASE;
+        int sdkVersion = Build.VERSION.SDK_INT;
+        return sdkVersion + " (" + release + ")";
+    }
+
+    private static String getAppVersion() {
+        return BuildConfig.VERSION_NAME;
     }
 }

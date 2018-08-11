@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -21,9 +23,13 @@ public class Person extends RealmObject {
     private String name;
     private String phone;
     private String memo;
+    @Index
     private Date createdAt = new Date();
     private String profileImage;
     private RealmList<Sales> sales;
+
+    @Ignore
+    private boolean checked = false; //삭제할 고객 체크
 
     public String getId() {
         return id;
@@ -103,6 +109,14 @@ public class Person extends RealmObject {
 
     public void setSales(RealmList<Sales> sales) {
         this.sales = sales;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     @Override

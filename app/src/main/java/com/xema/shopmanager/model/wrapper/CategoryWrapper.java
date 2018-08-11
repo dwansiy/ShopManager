@@ -12,6 +12,7 @@ import io.realm.RealmList;
  * Created by xema0 on 2018-02-24.
  */
 
+// TODO: 2018-08-09 need refactoring
 public class CategoryWrapper implements Parent<Purchase> {
     private Category category;
     private RealmList<Purchase> purchases = new RealmList<>();

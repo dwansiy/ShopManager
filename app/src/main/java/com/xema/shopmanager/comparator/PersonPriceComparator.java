@@ -12,7 +12,8 @@ import io.realm.RealmList;
  * Created by xema0 on 2018-07-02.
  */
 
-// TODO: 2018-07-03 Need Refactoring
+/* Managed List Must Use RealmQuery.sort() */
+@Deprecated
 public class PersonPriceComparator implements Comparator<Person> {
     @Override
     public int compare(Person o1, Person o2) {

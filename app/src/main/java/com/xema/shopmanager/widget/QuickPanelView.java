@@ -15,6 +15,8 @@ import com.xema.shopmanager.R;
 import java.util.Arrays;
 import java.util.List;
 
+//Deprecated : If user select sort mode to 'CreatedAt' order, it will cause error
+@Deprecated
 public class QuickPanelView extends View {
 
     private OnQuickSideBarTouchListener listener;

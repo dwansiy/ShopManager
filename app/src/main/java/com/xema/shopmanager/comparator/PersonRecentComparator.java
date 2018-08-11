@@ -14,6 +14,8 @@ import io.realm.RealmList;
  * Created by xema0 on 2018-07-02.
  */
 
+/* Managed List Must Use RealmQuery.sort() */
+@Deprecated
 public class PersonRecentComparator implements Comparator<Person> {
     @Override
     public int compare(Person o1, Person o2) {
