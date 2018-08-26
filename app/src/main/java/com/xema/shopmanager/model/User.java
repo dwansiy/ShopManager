@@ -2,22 +2,16 @@ package com.xema.shopmanager.model;
 
 import android.text.TextUtils;
 
+import com.xema.shopmanager.enums.BusinessType;
+
 import java.util.Date;
 import java.util.UUID;
 
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 /**
- * Created by xema0 on 2018-05-15.
+ * Created by xema0 on 2018-08-17.
  */
 
-public class Profile extends RealmObject {
-    public enum BusinessType {
-        BEAUTY, BUSINESS, LESSON, HEALTH, EDUCATION, ETC
-    }
-
-    @PrimaryKey
+public class User {
     private String id = UUID.randomUUID().toString();
     private long kakaoId;
     private String name;
@@ -25,6 +19,8 @@ public class Profile extends RealmObject {
     private String profileImage;
     private String businessType;
     private String businessName;
+    // TODO: 2018-08-17 false 로 바꾸기
+    private boolean premium = true;
 
     public String getId() {
         return id;
@@ -81,5 +77,13 @@ public class Profile extends RealmObject {
 
     public void setBusinessName(String businessName) {
         this.businessName = businessName;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 }

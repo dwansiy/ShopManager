@@ -16,17 +16,12 @@ import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
-import com.kakao.usermgmt.response.model.User;
 import com.kakao.util.exception.KakaoException;
-import com.kakao.util.helper.log.Logger;
 import com.xema.shopmanager.R;
-import com.xema.shopmanager.model.Profile;
+import com.xema.shopmanager.common.PreferenceHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmAsyncTask;
-import io.realm.RealmResults;
 
 /**
  * Created by xema0 on 2018-05-15.
@@ -37,14 +32,14 @@ public class KakaoStartActivity extends AppCompatActivity {
     Button btnSignIn;
 
     private SessionCallback callback;
-    private Realm realm;
-    private RealmAsyncTask transaction;
+    //private Realm realm;
+    //private RealmAsyncTask transaction;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kakao_start);
-        realm = Realm.getDefaultInstance();
+        //realm = Realm.getDefaultInstance();
 
         ButterKnife.bind(this);
 
@@ -67,6 +62,7 @@ public class KakaoStartActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /*
     @Override
     protected void onStop() {
         if (transaction != null && !transaction.isCancelled()) {
@@ -74,15 +70,16 @@ public class KakaoStartActivity extends AppCompatActivity {
         }
         super.onStop();
     }
+    */
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Session.getCurrentSession().removeCallback(callback);
-        if (realm != null) {
-            realm.close();
-            realm = null;
-        }
+        //if (realm != null) {
+        //    realm.close();
+        //    realm = null;
+        //}
     }
 
     private class SessionCallback implements ISessionCallback {
@@ -117,6 +114,16 @@ public class KakaoStartActivity extends AppCompatActivity {
 
 
     private void attemptRegister(long kakaoId, String name, String profileImage) {
+        com.xema.shopmanager.model.User user = new com.xema.shopmanager.model.User();
+        user.setKakaoId(kakaoId);
+        user.setName(name);
+        user.setProfileImage(profileImage);
+        PreferenceHelper.saveUser(this, user);
+        final Intent intent = new Intent(this, SignUpActivity.class);
+        startActivity(intent);
+        finish();
+
+        /*
         if (realm == null) return;
 
         final Profile profile = new Profile();
@@ -133,5 +140,6 @@ public class KakaoStartActivity extends AppCompatActivity {
         }, error -> {
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
         });
+    */
     }
 }

@@ -19,6 +19,7 @@ import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.enums.SortType;
 import com.xema.shopmanager.model.Person;
 import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.model.Sales;
@@ -87,20 +88,20 @@ public class CustomerAdapter extends RealmRecyclerViewAdapter<Person, CustomerAd
         return getData() == null ? 0 : getData().size();
     }
 
-    private void filterResults(String text, Constants.Sort sort) {
+    private void filterResults(String text, SortType sort) {
         if (TextUtils.isEmpty(text)) {
-            if (sort == Constants.Sort.NAME) {
+            if (sort == SortType.NAME) {
                 updateData(realm.where(Person.class).sort("name", Sort.ASCENDING).findAll());
                 return;
-            } else if (sort == Constants.Sort.CREATE) {
+            } else if (sort == SortType.CREATE) {
                 updateData(realm.where(Person.class).sort("createdAt", Sort.DESCENDING).findAll());
                 return;
             }
         } else {
-            if (sort == Constants.Sort.NAME) {
+            if (sort == SortType.NAME) {
                 updateData(realm.where(Person.class).contains("name", text, Case.INSENSITIVE).or().contains("phone", text, Case.INSENSITIVE).sort("name", Sort.ASCENDING).findAll());
                 return;
-            } else if (sort == Constants.Sort.CREATE) {
+            } else if (sort == SortType.CREATE) {
                 updateData(realm.where(Person.class).contains("name", text, Case.INSENSITIVE).or().contains("phone", text, Case.INSENSITIVE).sort("createdAt", Sort.DESCENDING).findAll());
                 return;
             }

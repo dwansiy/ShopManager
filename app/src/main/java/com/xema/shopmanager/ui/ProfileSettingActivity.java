@@ -13,8 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,7 +24,9 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
-import com.xema.shopmanager.model.Profile;
+import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.enums.BusinessType;
+import com.xema.shopmanager.model.User;
 import com.xema.shopmanager.utils.PermissionUtil;
 import com.yalantis.ucrop.UCrop;
 
@@ -32,7 +34,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
+import io.realm.SyncUser;
 
 /**
  * Created by xema0 on 2018-07-24.
@@ -67,11 +69,13 @@ public class ProfileSettingActivity extends AppCompatActivity {
     EditText edtBusinessName;
     @BindView(R.id.iv_edit_profile)
     ImageView ivEditProfile;
+    @BindView(R.id.btn_sign_out)
+    Button btnSignOut;
 
-    private Realm realm;
+    //private Realm realm;
 
-    private Profile mProfile;
-    private Profile.BusinessType type = null;
+    private User user;
+    private BusinessType type = null;
 
     private File mProfileImageFile;
 
@@ -79,21 +83,21 @@ public class ProfileSettingActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setting);
-        realm = Realm.getDefaultInstance();
+        //realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
         initToolbar();
         initListeners();
-        mProfile = realm.where(Profile.class).findFirst();
-        if (mProfile == null) {
+        user = PreferenceHelper.loadUser(this);
+        if (user == null) {
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        initProfileData(mProfile);
-
+        initUserData(user);
     }
 
+    /*
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -102,6 +106,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
             realm = null;
         }
     }
+    */
 
     private void initToolbar() {
         setSupportActionBar(tbMain);
@@ -137,14 +142,20 @@ public class ProfileSettingActivity extends AppCompatActivity {
         });
 
         ivDone.setOnClickListener(this::attemptDone);
+
+
+        // TODO: 2018-08-17 로그아웃 구현
+        btnSignOut.setOnClickListener(v -> {
+            SyncUser.current().logOut();
+        });
     }
 
-    private void initProfileData(Profile profile) {
-        edtName.setText(profile.getName());
-        edtBusinessName.setText(profile.getBusinessName());
-        GlideApp.with(this).load(profile.getProfileImage()).into(rivProfile);
+    private void initUserData(User user) {
+        edtName.setText(user.getName());
+        edtBusinessName.setText(user.getBusinessName());
+        GlideApp.with(this).load(user.getProfileImage()).into(rivProfile);
 
-        type = profile.getBusinessType();
+        type = user.getBusinessType();
         if (type == null) return;
         switch (type) {
             case BEAUTY:
@@ -176,22 +187,22 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.tv_beauty:
-                type = Profile.BusinessType.BEAUTY;
+                type = BusinessType.BEAUTY;
                 break;
             case R.id.tv_business:
-                type = Profile.BusinessType.BUSINESS;
+                type = BusinessType.BUSINESS;
                 break;
             case R.id.tv_lesson:
-                type = Profile.BusinessType.LESSON;
+                type = BusinessType.LESSON;
                 break;
             case R.id.tv_health:
-                type = Profile.BusinessType.HEALTH;
+                type = BusinessType.HEALTH;
                 break;
             case R.id.tv_education:
-                type = Profile.BusinessType.EDUCATION;
+                type = BusinessType.EDUCATION;
                 break;
             case R.id.tv_etc:
-                type = Profile.BusinessType.ETC;
+                type = BusinessType.ETC;
                 break;
             default:
                 Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
@@ -280,6 +291,26 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
         view.setEnabled(false);
 
+        if (user == null) {
+            Toast.makeText(ProfileSettingActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
+            view.setEnabled(true);
+            return;
+        }
+
+        user.setBusinessType(type);
+        String name = edtName.getText().toString();
+        user.setName(name);
+        String businessName = edtBusinessName.getText().toString();
+        user.setBusinessName(businessName);
+        if (mProfileImageFile != null) {
+            user.setProfileImage(mProfileImageFile.toString());
+        }
+        PreferenceHelper.saveUser(this, user);
+        view.setEnabled(true);
+        setResult(RESULT_OK);
+        finish();
+
+        /*
         realm.executeTransaction(realm -> {
             if (mProfile == null) {
                 runOnUiThread(() -> {
@@ -302,5 +333,6 @@ public class ProfileSettingActivity extends AppCompatActivity {
             setResult(RESULT_OK);
             finish();
         });
+        */
     }
 }

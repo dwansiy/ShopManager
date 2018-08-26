@@ -3,13 +3,16 @@ package com.xema.shopmanager.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.Cursor;
 import android.net.MailTo;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Base64;
@@ -23,8 +26,9 @@ import android.widget.EditText;
 
 import com.xema.shopmanager.BuildConfig;
 import com.xema.shopmanager.R;
+import com.xema.shopmanager.common.PreferenceHelper;
 import com.xema.shopmanager.model.Person;
-import com.xema.shopmanager.model.Profile;
+import com.xema.shopmanager.model.User;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -206,16 +210,14 @@ public class CommonUtil {
         return filteredList;
     }
 
-    public static String makeReportString(Context context, Realm realm) {
+    public static String makeReportString(Context context) {
         String bodyString;
-        if (realm != null && !realm.isClosed()) {
-            Profile profile = realm.where(Profile.class).findFirst();
-            if (profile != null) {
-                bodyString = context.getString(R.string.report_body_long, getAndroidVersion(), getAppVersion(), profile.getId(), String.valueOf(profile.getKakaoId()), profile.getName());
-                return "mailto:xema027@gmail.com?" + "&body=" + Uri.encode(bodyString);
-            }
+        User user = PreferenceHelper.loadUser(context);
+        if (user != null) {
+            bodyString = context.getString(R.string.report_body_long, getAndroidVersion(), getAppVersion(), user.getId(), String.valueOf(user.getKakaoId()), user.getName());
+        } else {
+            bodyString = context.getString(R.string.report_body_short, getAndroidVersion(), getAppVersion());
         }
-        bodyString = context.getString(R.string.report_body_short, getAndroidVersion(), getAppVersion());
         return "mailto:xema027@gmail.com?" + "&body=" + Uri.encode(bodyString);
     }
 
@@ -228,4 +230,25 @@ public class CommonUtil {
     private static String getAppVersion() {
         return BuildConfig.VERSION_NAME;
     }
+
+    //public static String getPathFromUri(Context context, Uri uri) {
+    //    Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+    //    if (cursor == null) return null;
+    //    cursor.moveToNext();
+    //    String path = cursor.getString(cursor.getColumnIndex("_data"));
+    //    cursor.close();
+    //    return path;
+    //}
+
+    public static String getRealPathFromURI(Context context, Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        CursorLoader loader = new CursorLoader(context, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
+    }
+
 }

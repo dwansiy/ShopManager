@@ -17,12 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xema.shopmanager.R;
-import com.xema.shopmanager.model.Profile;
+import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.enums.BusinessType;
+import com.xema.shopmanager.model.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmAsyncTask;
 
 /**
  * Created by xema0 on 2018-05-15.
@@ -50,38 +50,38 @@ public class SignUpActivity extends AppCompatActivity {
     @BindView(R.id.edt_business_name)
     EditText edtBusinessName;
 
-    private Profile.BusinessType type = null;
+    private BusinessType type = null;
 
-    private Realm realm;
-    private RealmAsyncTask transaction;
+    //private Realm realm;
+    //private RealmAsyncTask transaction;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        realm = Realm.getDefaultInstance();
+        //realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
         initToolbar();
         initListeners();
     }
 
-    @Override
-    protected void onStop() {
-        if (transaction != null && !transaction.isCancelled()) {
-            transaction.cancel();
-        }
-        super.onStop();
-    }
+    //@Override
+    //protected void onStop() {
+    //    if (transaction != null && !transaction.isCancelled()) {
+    //        transaction.cancel();
+    //    }
+    //    super.onStop();
+    //}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (realm != null) {
-            realm.close();
-            realm = null;
-        }
-    }
+    //@Override
+    //protected void onDestroy() {
+    //    super.onDestroy();
+    //    if (realm != null) {
+    //        realm.close();
+    //        realm = null;
+    //    }
+    //}
 
     private void initToolbar() {
         setSupportActionBar(tbMain);
@@ -125,23 +125,22 @@ public class SignUpActivity extends AppCompatActivity {
 
         switch (v.getId()) {
             case R.id.tv_beauty:
-                type = Profile.BusinessType.BEAUTY;
+                type = BusinessType.BEAUTY;
                 break;
             case R.id.tv_business:
-
-                type = Profile.BusinessType.BUSINESS;
+                type = BusinessType.BUSINESS;
                 break;
             case R.id.tv_lesson:
-                type = Profile.BusinessType.LESSON;
+                type = BusinessType.LESSON;
                 break;
             case R.id.tv_health:
-                type = Profile.BusinessType.HEALTH;
+                type = BusinessType.HEALTH;
                 break;
             case R.id.tv_education:
-                type = Profile.BusinessType.EDUCATION;
+                type = BusinessType.EDUCATION;
                 break;
             case R.id.tv_etc:
-                type = Profile.BusinessType.ETC;
+                type = BusinessType.ETC;
                 break;
             default:
                 Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
@@ -171,6 +170,24 @@ public class SignUpActivity extends AppCompatActivity {
 
         view.setEnabled(false);
 
+        User user = PreferenceHelper.loadUser(this);
+        if (user == null) {
+            view.setEnabled(true);
+            Toast.makeText(SignUpActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        user.setBusinessType(type);
+        String businessName = edtBusinessName.getText().toString();
+        if (!TextUtils.isEmpty(businessName)) {
+            user.setBusinessName(businessName);
+        }
+        PreferenceHelper.saveUser(this, user);
+        view.setEnabled(true);
+        final Intent intent = new Intent(SignUpActivity.this, CustomerActivity.class);
+        startActivity(intent);
+        finish();
+
+        /*
         transaction = realm.executeTransactionAsync(bgRealm -> {
             final Profile profile = bgRealm.where(Profile.class).findFirst();
             if (profile == null) {
@@ -196,5 +213,6 @@ public class SignUpActivity extends AppCompatActivity {
             view.setEnabled(true);
             Toast.makeText(this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
         });
+        */
     }
 }

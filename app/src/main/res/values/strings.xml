@@ -37,8 +37,10 @@
 
     <string name="action_edit">수정하기</string>
     <string name="action_delete">삭제하기</string>
+    <string name="action_make">만들기</string>
 
     <string name="error_common">알수없는 에러가 발생했습니다.</string>
+    <string name="error_network">네트워크가 원활하지 않습니다.\n잠시후 다시 시도해주세요</string>
 
     <string name="message_add_complete">추가되었습니다</string>
     <string name="message_edit_complete">수정되었습니다</string>
@@ -166,6 +168,7 @@
     <string name="setting_detail_quick_panel">초성으로 이동할수 있도록 퀵패널을 사용합니다</string>
     <string name="setting_title_contact">전화번호부 가져오기</string>
     <string name="setting_detail_contact">기기내에 등록된 전화번호로 고객을 등록합니다</string>
+    <string name="action_sign_out">로그아웃</string>
 
     <!-- 버그 제보 -->
     <string name="report_body_long">OS Version : %s\nApp Version : %s\nUser Id : %s\nKakao Id : %s\nUser Name : %s\n\n\n</string>
@@ -185,4 +188,10 @@
     <string name="action_export_back_up">백업 파일 내보내기</string>
     <string name="action_import_back_up">백업 파일 가져오기</string>
     <string name="message_back_up_file_path">%s\n경로에 백업파일이 생성됩니다</string>
+    <string name="title_dialog_make_back_up_file">파일명을 입력해주세요</string>
+    <string name="hint_dialog_back_up_file_name">(ex) 20180824_backup</string>
+    <string name="error_invalid_file_name">유효하지 않은 파일명입니다</string>
+    <string name="message_make_back_up_file_complete">%s 경로에 저장되었습니다</string>
+    <string name="message_import_back_up_complete">데이터를 성공적으로 가져왔습니다.\n어플리케이션을 재시작합니다.</string>
+    <string name="message_choose_export_application">내보낼 어플리케이션 선택</string>
 </resources>

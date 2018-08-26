@@ -35,9 +35,10 @@ import com.xema.shopmanager.adapter.CustomerAdapter;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.enums.SortType;
 import com.xema.shopmanager.model.Person;
-import com.xema.shopmanager.model.Profile;
 import com.xema.shopmanager.model.Sales;
+import com.xema.shopmanager.model.User;
 import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
@@ -47,13 +48,20 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.ObjectServerError;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.SyncConfiguration;
+import io.realm.SyncCredentials;
+import io.realm.SyncUser;
 import io.realm.internal.IOException;
+
+import static com.xema.shopmanager.common.Constants.AUTH_URL;
+import static com.xema.shopmanager.common.Constants.REALM_BASE_URL;
 
 public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Filter.FilterListener {
     private static final String TAG = CustomerActivity.class.getSimpleName();
@@ -83,14 +91,14 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
-        setContentView(R.layout.activity_customer);
-        ButterKnife.bind(this);
+       realm = Realm.getDefaultInstance();
+       setContentView(R.layout.activity_customer);
+       ButterKnife.bind(this);
 
-        initToolbar();
-        initDrawer();
-        initListeners();
-        setUpAdapter();
+       initToolbar();
+       initDrawer();
+       initListeners();
+       setUpAdapter();
     }
 
     @Override
@@ -99,6 +107,15 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             transaction.cancel();
         }
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (realm != null) {
+            realm.close();
+            realm = null;
+        }
     }
 
     private void initToolbar() {
@@ -122,15 +139,15 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     private void updateDrawer() {
         if (realm == null) return;
-        Profile profile = realm.where(Profile.class).findFirst();
-        if (profile == null) return;
+        User user = PreferenceHelper.loadUser(this);
+        if (user == null) return;
         View headerView = nvDrawer.getHeaderView(0);
         RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
         TextView nameView = headerView.findViewById(R.id.tv_name);
         TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
-        GlideApp.with(this).load(profile.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
-        nameView.setText(profile.getName());
-        businessNameView.setText(profile.getBusinessName());
+        GlideApp.with(this).load(user.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
+        nameView.setText(user.getName());
+        businessNameView.setText(user.getBusinessName());
     }
 
     private void initListeners() {
@@ -229,6 +246,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.REQUEST_CODE_ADD_CUSTOMER && resultCode == RESULT_OK) {
+            updateUI();
             //edtSearch.getText().clear();
             //CommonUtil.hideKeyboard(this);
             //queryList();
@@ -302,7 +320,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         return super.onOptionsItemSelected(item);
     }
 
-    private void attemptSort(Constants.Sort sort) {
+    private void attemptSort(SortType sort) {
         PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
         attemptSearch(edtSearch.getText().toString());
     }
@@ -317,19 +335,6 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         } else if (id == R.id.menu_nav_data) {
             Intent intent = new Intent(this, BackUpActivity.class);
             startActivity(intent);
-            // TODO: 2018-08-09  csv 파일로 변환하는건 프리미엄 모델에서 해주는걸로. api가 없어서 수도으로 csv 파일 생성하는 코드 만들어줘야함
-            // TODO: 2018-08-09 스키마 버전 고려하고, 프로필 데이터는 realm 에서 제외해야할듯(서로 다른 profile일 경우 카카오톡에서 꼬임... 아니면 카카오톡 로그인을 삭제하거나 해야할듯)
-            //try {
-            //    final File file = new File(Environment.getExternalStorageDirectory().getPath().concat("/default.realm"));
-            //    if (file.exists()) {
-            //        //noinspection ResultOfMethodCallIgnored
-            //        file.delete();
-            //    }
-            //    realm.writeCopyTo(file);
-            //    Toast.makeText(this, "Success export realm file", Toast.LENGTH_SHORT).show();
-            //} catch (IOException e) {
-            //    e.printStackTrace();
-            //}
         } else if (id == R.id.menu_nav_analysis) {
             Intent intent = new Intent(this, ChartListActivity.class);
             startActivity(intent);
@@ -346,7 +351,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
             }
         } else if (id == R.id.menu_nav_report) {
-            Uri uri = Uri.parse(CommonUtil.makeReportString(this, realm));
+            Uri uri = Uri.parse(CommonUtil.makeReportString(this));
             Intent it = new Intent(Intent.ACTION_SENDTO, uri);
             startActivity(it);
         } else if (id == R.id.menu_nav_version) {

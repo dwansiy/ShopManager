@@ -12,6 +12,7 @@ import android.widget.Switch;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.common.PreferenceHelper;
+import com.xema.shopmanager.enums.SortType;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,7 +20,6 @@ import butterknife.ButterKnife;
 // TODO: 2018-08-04
 /* 관리 객체에서는 CUSTOM SORT 불가능... PRICE, VISIT, RECENT 정렬은 Person 객체에 필드 따로 빼서 구현하는식으로 할것 */
 public class SortBottomSheetDialog extends BottomSheetDialog {
-
     @BindView(R.id.tv_sort_name)
     CheckedTextView tvSortName;
     @BindView(R.id.tv_sort_price)
@@ -36,7 +36,7 @@ public class SortBottomSheetDialog extends BottomSheetDialog {
     private Context mContext;
 
     public interface onSortListener {
-        void onSort(Constants.Sort sort);
+        void onSort(SortType sort);
     }
 
     public void setOnSortListener(onSortListener listener) {
@@ -87,19 +87,19 @@ public class SortBottomSheetDialog extends BottomSheetDialog {
 
             switch (v.getId()) {
                 case R.id.tv_sort_name:
-                    onSortListener.onSort(Constants.Sort.NAME);
+                    onSortListener.onSort(SortType.NAME);
                     break;
                 case R.id.tv_sort_price:
-                    onSortListener.onSort(Constants.Sort.PRICE);
+                    onSortListener.onSort(SortType.PRICE);
                     break;
                 case R.id.tv_sort_visit:
-                    onSortListener.onSort(Constants.Sort.VISIT);
+                    onSortListener.onSort(SortType.VISIT);
                     break;
                 case R.id.tv_sort_create:
-                    onSortListener.onSort(Constants.Sort.CREATE);
+                    onSortListener.onSort(SortType.CREATE);
                     break;
                 case R.id.tv_sort_recent:
-                    onSortListener.onSort(Constants.Sort.RECENT);
+                    onSortListener.onSort(SortType.RECENT);
                     break;
                 default:
                     break;

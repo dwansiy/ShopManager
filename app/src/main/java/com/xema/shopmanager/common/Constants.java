@@ -14,16 +14,9 @@ public class Constants {
     public static final int REQUEST_CODE_OPEN_GALLERY = 340;
     public static final int REQUEST_CODE_CROP_IMAGE = 341;
     public static final int REQUEST_CODE_SETTING = 350;
+    public static final int REQUEST_CODE_SELECT_FILE = 360;
 
-    public enum Sort {
-        NAME, RECENT, PRICE, CREATE, VISIT;
-
-        public static Sort toSort(String string) {
-            try {
-                return valueOf(string);
-            } catch (Exception ex) {
-                return NAME;
-            }
-        }
-    }
+    private static final String REALM_INSTANCE_ADDRESS = "shopmanagertest.us1a.cloud.realm.io";
+    public static final String AUTH_URL = "https://" + REALM_INSTANCE_ADDRESS + "/auth";
+    public static final String REALM_BASE_URL = "realms://" + REALM_INSTANCE_ADDRESS;
 }

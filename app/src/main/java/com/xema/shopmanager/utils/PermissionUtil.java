@@ -20,6 +20,9 @@ public class PermissionUtil {
     //Permission constants
     public static final int PERMISSION_GALLERY = 1;
     public static final int PERMISSION_CONTACT = 2;
+    public static final int PERMISSION_MAKE_BACK_UP_FILE = 3;
+    public static final int PERMISSION_EXPORT_BACK_UP_FILE = 4;
+    public static final int PERMISSION_IMPORT_BACK_UP_FILE = 5;
 
     public static boolean checkAndRequestPermission(Activity activity, int permissionRequestCode, String... permissions) {
         String[] requiredPermissions = getRequiredPermissions(activity, permissions);

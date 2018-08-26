@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!--/storage/emulated/0/Shop Manager-->
+    <external-path
+        name="backup"
+        path="." />
+</paths>
