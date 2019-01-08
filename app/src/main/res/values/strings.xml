@@ -27,6 +27,7 @@
     <string name="common_cancel">취소</string>
     <string name="common_register">등록</string>
     <string name="common_memo">메모</string>
+    <string name="common_optional">(선택사항)</string>
     <string name="common_sort">정렬</string>
     <string name="common_category">카테고리</string>
     <string name="common_delete">삭제</string>
@@ -86,6 +87,8 @@
     <string name="message_error_no_input_price">금액을 입력해주세요</string>
     <string name="message_error_price_must_over_zero">금액은 0원 이상이여야 합니다</string>
     <string name="message_delete_success">삭제되었습니다.</string>
+
+    <string name="message_no_input_business_name">개인/사업자명을 등록해주세요</string>
 
     <!-- 정렬 -->
     <string name="sort_name">이름순 정렬</string>
@@ -168,6 +171,7 @@
     <string name="setting_detail_quick_panel">초성으로 이동할수 있도록 퀵패널을 사용합니다</string>
     <string name="setting_title_contact">전화번호부 가져오기</string>
     <string name="setting_detail_contact">기기내에 등록된 전화번호로 고객을 등록합니다</string>
+    <string name="message_alert_sign_out">정말 로그아웃 하시겠습니까?\n데이터가 전부 초기화됩니다</string>
     <string name="action_sign_out">로그아웃</string>
 
     <!-- 버그 제보 -->
@@ -194,4 +198,8 @@
     <string name="message_make_back_up_file_complete">%s 경로에 저장되었습니다</string>
     <string name="message_import_back_up_complete">데이터를 성공적으로 가져왔습니다.\n어플리케이션을 재시작합니다.</string>
     <string name="message_choose_export_application">내보낼 어플리케이션 선택</string>
+    <string name="message_chhose_upload_file">업로드할 파일을 선택해주세요</string>
+    <string name="error_not_have_file_explorer">파일 매니저 어플리케이션이 없습니다</string>
+    <string name="message_dialog_import_alert_html">데이터를 가져오기전, 최신버전을 확인해주세요.\n최신버전이 아닐경우 데이터가 정상적으로\n나오지 않을수도 있습니다.</string>
+    <string name="action_import">백업 가져오기</string>
 </resources>

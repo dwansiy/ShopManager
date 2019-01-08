@@ -2,9 +2,16 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorGray2</item>
-        <item name="colorPrimaryDark">@color/colorBlack</item>
-        <item name="colorAccent">@color/colorYellow</item>
+        <item name="colorPrimaryDark">@color/colorGray1</item>
+        <item name="colorAccent">@color/colorGray2</item>
     </style>
+
+    <!--
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@color/colorNavy</item>
+    </style>
+    -->
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_splash</item>
@@ -18,7 +25,7 @@
         <item name="colorAccent">@color/colorGray3</item>
     </style>
 
-    <style name="FloationActionButtonStyle">
+    <style name="FloatingActionButtonStyle">
         <item name="colorAccent">@color/colorGray1</item>
     </style>
 

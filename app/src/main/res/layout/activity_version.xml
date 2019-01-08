@@ -120,9 +120,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/selector_solid_radius_light_gray"
         android:enabled="false"
         android:text="@string/common_loading"
-        android:textColor="@color/colorGray1" />
+        android:textColor="@color/colorWhite" />
 
     <android.support.v4.widget.Space
         android:layout_width="0dp"

@@ -91,14 +91,14 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       realm = Realm.getDefaultInstance();
-       setContentView(R.layout.activity_customer);
-       ButterKnife.bind(this);
+        realm = Realm.getDefaultInstance();
+        setContentView(R.layout.activity_customer);
+        ButterKnife.bind(this);
 
-       initToolbar();
-       initDrawer();
-       initListeners();
-       setUpAdapter();
+        initToolbar();
+        initDrawer();
+        initListeners();
+        setUpAdapter();
     }
 
     @Override
@@ -143,11 +143,12 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         if (user == null) return;
         View headerView = nvDrawer.getHeaderView(0);
         RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
-        TextView nameView = headerView.findViewById(R.id.tv_name);
+        //이름 삭제
+        //TextView nameView = headerView.findViewById(R.id.tv_name);
+        //nameView.setText(user.getName());
         TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
         GlideApp.with(this).load(user.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
-        nameView.setText(user.getName());
-        businessNameView.setText(user.getBusinessName());
+        businessNameView.setText(TextUtils.isEmpty(user.getBusinessName()) ? getString(R.string.message_no_input_business_name) : user.getBusinessName());
     }
 
     private void initListeners() {

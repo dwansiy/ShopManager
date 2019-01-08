@@ -16,6 +16,7 @@
     <color name="colorGray6">#DDDDDD</color>
     <color name="colorGray7">#EEEEEE</color>
     <color name="colorGray8">#F7F7F7</color>
+    <color name="colorGray9">#fafafa</color>
 
     <color name="colorGreen">#165e1e</color>
 
@@ -25,4 +26,10 @@
     <color name="colorRed">#d90b0b</color>
     <color name="colorRedDark">#c43b22</color>
 
+    <color name="colorNavy">#001A60</color>
+
+    <color name="colorBrown">#664D30</color>
+    <color name="colorBrownDark">#543F29</color>
+
+    <color name="colorOrange">#F7A01D</color>
 </resources>

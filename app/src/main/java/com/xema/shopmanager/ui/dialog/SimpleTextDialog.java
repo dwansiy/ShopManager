@@ -3,6 +3,7 @@ package com.xema.shopmanager.ui.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ public class SimpleTextDialog extends Dialog {
 
     private Context mContext;
     private OnPositiveListener onPositiveListener;
-    private String message;
+    private CharSequence message;
     private String positiveButtonText;
 
     public interface OnPositiveListener {
@@ -37,6 +38,7 @@ public class SimpleTextDialog extends Dialog {
         ButterKnife.bind(this);
 
         tvMessage.setText(message);
+        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
         tvNegative.setOnClickListener(v -> dismiss());
         tvPositive.setText(positiveButtonText);
         tvPositive.setOnClickListener(v -> {
@@ -45,7 +47,7 @@ public class SimpleTextDialog extends Dialog {
         });
     }
 
-    public SimpleTextDialog(Context context, String message) {
+    public SimpleTextDialog(Context context, CharSequence message) {
         super(context);
         this.mContext = context;
         this.message = message;

@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.common.Constants;
 import com.xema.shopmanager.ui.dialog.MakeBackUpFileDialog;
+import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.utils.PermissionUtil;
 
 import java.io.File;
@@ -106,7 +109,7 @@ public class BackUpActivity extends AppCompatActivity {
 
     private void attemptImportBackUpFile() {
         if (PermissionUtil.checkAndRequestPermission(this, PermissionUtil.PERMISSION_IMPORT_BACK_UP_FILE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            showFileChooser();
+            showImportAlertDialog();
         }
     }
 
@@ -148,6 +151,12 @@ public class BackUpActivity extends AppCompatActivity {
         return null;
     }
 
+    // TODO: 2018-08-29 버전에 따라 스키마가 다른 경우는 어떻게 해결해야하지? -> v1:원본 v2:Person 에 필드 추가됨. 인 상황.
+    // TODO: 2018-08-29 case 1 : 기기의 DB 버전 v2. import v1 -> SyncConfig 사용하지 않으면 SchemaMigration 수행하므로 문제 x. import v2->문제 x
+    // TODO: 2018-08-29 case 2 : 기기의 DB 버전 v1(예전꺼 쓰고있을경우) import v1->문제 x. import v2 : person field 충돌.... 업데이트를 강제해야하나?
+    // TODO: 2018-08-29 업데이트를 강제하기 위해서는 네트워크 확인도 필요. alert 띄우고 업데이트 권유가 나을듯. 충돌날수도 있다는 권유로.
+    // TODO: 2018-08-29 제일 좋은 방법은 기기의 db 버전과 import 하는 realm 파일의 버전을 확인하는것
+    // TODO: 2018-08-29 기기 db버전은 확인 가능해도 import 하는 파일의 버전을 확인 어떻게하지... realm에 메일보내서 물어볼수도?
     private void exportBackUpFile() {
         String fileName = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date()).concat("_backup");
         File file = makeBackUpFile(fileName);
@@ -203,14 +212,28 @@ public class BackUpActivity extends AppCompatActivity {
         return null;
     }
 
+    private void showImportAlertDialog() {
+        String s = getString(R.string.message_dialog_import_alert_html) + "\n\n" + "<a href=\"https://play.google.com/store/apps/details?id=com.xema.shopmanager\">마켓으로 가기</a>";
+        Spanned spanned;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            // TODO: 2018-08-26  에러 확인해보기
+            spanned = Html.fromHtml(s);
+        }
+        SimpleTextDialog dialog = new SimpleTextDialog(this, spanned);
+        dialog.setOnPositiveListener(getString(R.string.action_import), this::showFileChooser);
+        dialog.show();
+    }
+
     private void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         //intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
-            startActivityForResult(Intent.createChooser(intent, "업로드할 파일을 선택해주세요"), Constants.REQUEST_CODE_SELECT_FILE);
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.message_chhose_upload_file)), Constants.REQUEST_CODE_SELECT_FILE);
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "파일 매니저 어플리케이션이 없습니다", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_not_have_file_explorer), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -241,7 +264,7 @@ public class BackUpActivity extends AppCompatActivity {
                 break;
             case PermissionUtil.PERMISSION_IMPORT_BACK_UP_FILE:
                 if (PermissionUtil.verifyPermissions(grantResults)) {
-                    showFileChooser();
+                    showImportAlertDialog();
                 } else {
                     PermissionUtil.showRationalDialog(this, getString(R.string.permission_need_permission));
                 }

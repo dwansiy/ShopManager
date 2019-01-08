@@ -27,6 +27,7 @@ import com.xema.shopmanager.common.GlideApp;
 import com.xema.shopmanager.common.PreferenceHelper;
 import com.xema.shopmanager.enums.BusinessType;
 import com.xema.shopmanager.model.User;
+import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.utils.PermissionUtil;
 import com.yalantis.ucrop.UCrop;
 
@@ -34,6 +35,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.SyncUser;
 
 /**
@@ -144,9 +146,19 @@ public class ProfileSettingActivity extends AppCompatActivity {
         ivDone.setOnClickListener(this::attemptDone);
 
 
-        // TODO: 2018-08-17 로그아웃 구현
         btnSignOut.setOnClickListener(v -> {
-            SyncUser.current().logOut();
+            SimpleTextDialog dialog = new SimpleTextDialog(this, getString(R.string.message_alert_sign_out));
+            dialog.setOnPositiveListener(getString(R.string.action_sign_out), () -> {
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.deleteAll();
+                realm.commitTransaction();
+                PreferenceHelper.resetAll(ProfileSettingActivity.this);
+                Intent intent = new Intent(ProfileSettingActivity.this, SplashActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            });
+            dialog.show();
         });
     }
 

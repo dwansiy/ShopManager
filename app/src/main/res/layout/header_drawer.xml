@@ -4,97 +4,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@color/colorGray1"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/riv_profile"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginBottom="12dp"
-        android:layout_marginTop="20dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_profile_default"
-        app:riv_border_color="@color/colorGray2"
-        app:riv_border_width="1px"
-        app:riv_oval="true" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.xema.shopmanager.widget.FontTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="shop"
-            android:textColor="@color/colorYellow"
-            android:textSize="20dp"
-            app:font_name="daum_r.ttf"
-            tools:ignore="HardcodedText,SpUsage" />
-
-        <com.xema.shopmanager.widget.FontTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="manager"
-            android:textColor="@color/colorYellow"
-            android:textSize="20dp"
-            app:font_name="daum_sb.ttf"
-            tools:ignore="HardcodedText,SpUsage" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="16dp"
-        android:layout_height="1px"
-        android:layout_marginBottom="14dp"
-        android:layout_marginTop="14dp"
-        android:background="@color/colorWhite" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/riv_profile"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_default"
+            app:riv_border_color="@color/colorGray2"
+            app:riv_border_width="1px"
+            app:riv_oval="true" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_name"
+            <com.xema.shopmanager.widget.FontTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLength="20"
-                android:textColor="@color/colorWhite"
-                android:textSize="13sp" />
+                android:text="shop"
+                android:textColor="@color/colorNavy"
+                android:textSize="20dp"
+                app:font_name="daum_r.ttf"
+                tools:ignore="HardcodedText,SpUsage" />
+
+            <com.xema.shopmanager.widget.FontTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="manager"
+                android:textColor="@color/colorNavy"
+                android:textSize="20dp"
+                app:font_name="daum_sb.ttf"
+                tools:ignore="HardcodedText,SpUsage" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="1px"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:background="@color/colorGray2" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- 이름은 안보이게... -->
+            <!--
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLength="20"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tv_business_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLength="20"
+                    android:textColor="@color/colorGray2"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            -->
 
             <TextView
                 android:id="@+id/tv_business_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLength="20"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorGray2"
                 android:textSize="12sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/iv_setting"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="@drawable/shape_stroke_gray"
+                android:padding="2dp"
+                app:srcCompat="@drawable/ic_settings_gray_vector" />
         </LinearLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/iv_setting"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:background="@drawable/shape_stroke_white"
-            android:padding="2dp"
-            app:srcCompat="@drawable/ic_settings_white_vector" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:background="@color/colorGray6" />
 </LinearLayout>

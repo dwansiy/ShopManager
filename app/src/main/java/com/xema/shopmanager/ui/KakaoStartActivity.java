@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -92,7 +90,7 @@ public class KakaoStartActivity extends AppCompatActivity {
         @Override
         public void onSessionOpenFailed(KakaoException exception) {
             if (exception != null) {
-                //Logger.e(exception);
+                exception.printStackTrace();
                 Toast.makeText(KakaoStartActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show();
             }
         }

@@ -1,9 +1,5 @@
 package com.xema.shopmanager.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
-
 import java.util.Date;
 import java.util.UUID;
 
