@@ -45,6 +45,8 @@
         <activity
             android:name=".ui.SalesRegisterActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+        <activity
+            android:name=".ui.SearchActivity" />
 
         <!-- image crop -->
         <activity

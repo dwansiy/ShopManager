@@ -3,9 +3,7 @@ package com.xema.shopmanager.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.xema.shopmanager.R;
 import com.xema.shopmanager.adapter.CustomerAdapter;
@@ -43,38 +41,24 @@ import com.xema.shopmanager.ui.dialog.SimpleTextDialog;
 import com.xema.shopmanager.ui.dialog.SortBottomSheetDialog;
 import com.xema.shopmanager.utils.CommonUtil;
 
-import java.io.File;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.ObjectServerError;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import io.realm.SyncConfiguration;
-import io.realm.SyncCredentials;
-import io.realm.SyncUser;
-import io.realm.internal.IOException;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
-import static com.xema.shopmanager.common.Constants.AUTH_URL;
-import static com.xema.shopmanager.common.Constants.REALM_BASE_URL;
-
-public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Filter.FilterListener {
+public class CustomerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = CustomerActivity.class.getSimpleName();
     @BindView(R.id.tb_main)
     Toolbar tbMain;
-    @BindView(R.id.edt_search)
-    EditText edtSearch;
     @BindView(R.id.rv_main)
     RecyclerView rvMain;
     @BindView(R.id.ll_empty)
     LinearLayout llEmpty;
-    @BindView(R.id.fab_add)
-    FloatingActionButton fabAdd;
     @BindView(R.id.nv_drawer)
     NavigationView nvDrawer;
     @BindView(R.id.dl_main)
@@ -120,7 +104,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     private void initToolbar() {
         setSupportActionBar(tbMain);
-        tbMain.setTitle(getString(R.string.common_loading));
+        tbMain.setTitle(getString(R.string.app_name));
     }
 
     private void initDrawer() {
@@ -129,6 +113,8 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         toggle.syncState();
         nvDrawer.setNavigationItemSelectedListener(this);
         View headerView = nvDrawer.getHeaderView(0);
+        //ImageView bgView = headerView.findViewById(R.id.iv_header_bg);
+        //GlideApp.with(this).load(R.drawable.bg_header).override(20, 100).apply(RequestOptions.bitmapTransform(new BlurTransformation(16))).into(bgView);
         ImageView settingView = headerView.findViewById(R.id.iv_setting);
         settingView.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProfileSettingActivity.class);
@@ -143,41 +129,19 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         if (user == null) return;
         View headerView = nvDrawer.getHeaderView(0);
         RoundedImageView roundedImageView = headerView.findViewById(R.id.riv_profile);
-        //이름 삭제
-        //TextView nameView = headerView.findViewById(R.id.tv_name);
-        //nameView.setText(user.getName());
+        TextView nameView = headerView.findViewById(R.id.tv_name);
+        nameView.setText(user.getName());
         TextView businessNameView = headerView.findViewById(R.id.tv_business_name);
         GlideApp.with(this).load(user.getProfileImage()).error(R.drawable.ic_profile_default).into(roundedImageView);
         businessNameView.setText(TextUtils.isEmpty(user.getBusinessName()) ? getString(R.string.message_no_input_business_name) : user.getBusinessName());
     }
 
     private void initListeners() {
-        fabAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(CustomerActivity.this, AddCustomerActivity.class);
-            startActivityForResult(intent, Constants.REQUEST_CODE_ADD_CUSTOMER);
-        });
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                attemptSearch(editable.toString());
-            }
-        });
+        // TODO: 2019-01-10
         srlMain.setOnRefreshListener(() -> {
-            attemptSearch(edtSearch.getText().toString());
+            mAdapter.refresh();
+            updateUI();
         });
-    }
-
-    private void attemptSearch(String s) {
-        if (mAdapter == null) return;
-        mAdapter.getFilter().filter(s, this); //Async
     }
 
     private void setUpAdapter() {
@@ -210,18 +174,11 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
         return q.findAll();
     }
 
-    //Show empty view if needed, Change toolbar status
     private void updateUI() {
         if (mAdapter == null) return;
 
-        boolean isInSearchMode = edtSearch.getText().length() != 0;
         int size = mAdapter.getData() == null ? 0 : mAdapter.getData().size();
 
-        if (isInSearchMode) {
-            tbMain.setTitle(getString(R.string.format_search_customer, size));
-        } else {
-            tbMain.setTitle(getString(R.string.format_count_customer, size));
-        }
         if (size <= 0) {
             rvMain.setVisibility(View.GONE);
             llEmpty.setVisibility(View.VISIBLE);
@@ -291,7 +248,8 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             sales.deleteAllFromRealm();
             deletePerson.deleteFromRealm();
         }, () -> {
-            attemptSearch(edtSearch.getText().toString());
+            mAdapter.refresh();
+            updateUI();
             Toast.makeText(CustomerActivity.this, getString(R.string.message_delete_success), Toast.LENGTH_SHORT).show();
         }, error -> Toast.makeText(CustomerActivity.this, getString(R.string.error_common), Toast.LENGTH_SHORT).show());
     }
@@ -304,7 +262,7 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_sort, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -317,13 +275,21 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
             dialog.setOnSortListener(this::attemptSort);
             dialog.show();
             return true;
+        } else
+        if (id == R.id.menu_add_customer) {
+            Intent intent = new Intent(CustomerActivity.this, AddCustomerActivity.class);
+            startActivityForResult(intent, Constants.REQUEST_CODE_ADD_CUSTOMER);
+        } else if (id == R.id.menu_search) {
+            Intent intent = new Intent(CustomerActivity.this, SearchActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void attemptSort(SortType sort) {
         PreferenceHelper.saveSortMode(CustomerActivity.this, sort);
-        attemptSearch(edtSearch.getText().toString());
+       mAdapter.refresh();
+        updateUI();
     }
 
     @Override
@@ -362,10 +328,5 @@ public class CustomerActivity extends AppCompatActivity implements NavigationVie
 
         dlMain.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onFilterComplete(int count) {
-        updateUI();
     }
 }

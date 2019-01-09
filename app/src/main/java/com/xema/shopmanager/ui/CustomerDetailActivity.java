@@ -33,7 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
-import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -67,8 +66,8 @@ public class CustomerDetailActivity extends AppCompatActivity {
     ImageView ivEdit;
     @BindView(R.id.ll_empty)
     LinearLayout llEmpty;
-    @BindView(R.id.fab_call)
-    FloatingActionButton fabCall;
+    //@BindView(R.id.fab_call)
+    //FloatingActionButton fabCall;
 
     private String id;
     private Realm realm;
@@ -84,7 +83,7 @@ public class CustomerDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_detail);
+        setContentView(R.layout.activity_customer_detail_backup);
         realm = Realm.getDefaultInstance();
         ButterKnife.bind(this);
 
@@ -140,7 +139,7 @@ public class CustomerDetailActivity extends AppCompatActivity {
         ivBack.setOnClickListener(v -> finish());
         ivEdit.setOnClickListener(this::attemptEdit);
         fabAdd.setOnClickListener(this::attemptAdd);
-        fabCall.setOnClickListener(this::attemptCall);
+        tvPhone.setOnClickListener(this::attemptCall);
     }
 
     private void initAdapter() {

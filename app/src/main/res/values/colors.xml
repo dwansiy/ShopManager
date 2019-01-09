@@ -32,4 +32,9 @@
     <color name="colorBrownDark">#543F29</color>
 
     <color name="colorOrange">#F7A01D</color>
+
+    <color name="colorC1">#e2e6b216</color>
+    <color name="colorC2">#f5f4dc08</color>
+
+    <color name="colorBrown2">#a1887f</color>
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shop Manager</string>
+    <string name="app_name">#샵매니저</string>
 
     <string name="kakao_app_key">45ca9c88a1f6be5987da7e1f7c7f61bf</string>
 
@@ -29,6 +29,7 @@
     <string name="common_memo">메모</string>
     <string name="common_optional">(선택사항)</string>
     <string name="common_sort">정렬</string>
+    <string name="common_add">추가</string>
     <string name="common_category">카테고리</string>
     <string name="common_delete">삭제</string>
     <string name="common_cash">현금</string>
@@ -112,7 +113,8 @@
     <string name="format_total_price">누적 금액 : </string>
     <string name="format_recent">최근 방문일 : </string>
     <string name="format_memo">메모 : </string>
-    <string name="empty_customer">고객이 등록되지 않았습니다\n오른쪽 아래 버튼을 눌러 첫번째 고객을 등록해주세요!</string>
+    <string name="empty_result_search">검색된 고객이 없습니다</string>
+    <string name="empty_customer">고객이 등록되지 않았습니다\n오른쪽 위 +버튼을 눌러 첫번째 고객을 등록해주세요!</string>
     <string name="error_not_registered_phone">전화번호가 등록되지 않은 고객입니다.</string>
     <string name="error_deleted_customer">삭제된 고객입니다.</string>
     <string name="alert_delete_customer">정말 %s 고객님을 삭제하시겠습니까?\n\n고객 프로필 및 매출내역이 삭제되며\n삭제된 데이터는 복구할 수 없습니다.</string>

@@ -25,6 +25,7 @@ import com.xema.shopmanager.model.Purchase;
 import com.xema.shopmanager.model.Sales;
 import com.xema.shopmanager.ui.CustomerDetailActivity;
 import com.xema.shopmanager.ui.CustomerActivity;
+import com.xema.shopmanager.ui.SearchActivity;
 import com.xema.shopmanager.utils.CommonUtil;
 import com.xema.shopmanager.utils.RealmUtils;
 
@@ -88,6 +89,20 @@ public class CustomerAdapter extends RealmRecyclerViewAdapter<Person, CustomerAd
         return getData() == null ? 0 : getData().size();
     }
 
+    public void refresh() {
+        SortType sort = PreferenceHelper.loadSortMode(mContext);
+        if (sort == null) {
+            updateData(realm.where(Person.class).sort("name", Sort.ASCENDING).findAll()); //error
+            return;
+        }
+
+        if (sort == SortType.NAME) {
+            updateData(realm.where(Person.class).sort("name", Sort.ASCENDING).findAll());
+        } else if (sort == SortType.CREATE) {
+            updateData(realm.where(Person.class).sort("createdAt", Sort.DESCENDING).findAll());
+        }
+    }
+
     private void filterResults(String text, SortType sort) {
         if (TextUtils.isEmpty(text)) {
             if (sort == SortType.NAME) {
@@ -128,7 +143,9 @@ public class CustomerAdapter extends RealmRecyclerViewAdapter<Person, CustomerAd
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            adapter.filterResults(constraint.toString(), PreferenceHelper.loadSortMode(mContext));
+            //SEARCH ACTIVITY 분리해서 이름순으로만 정렬되게끔 검색하도록 변경
+            //adapter.filterResults(constraint.toString(), PreferenceHelper.loadSortMode(mContext));
+            adapter.filterResults(constraint.toString(), SortType.NAME);
         }
     }
 
