@@ -90,6 +90,7 @@ public class SearchActivity extends AppCompatActivity implements Filter.FilterLi
     }
 
     private void initListeners() {
+        ivBack.setOnClickListener(v -> finish());
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
